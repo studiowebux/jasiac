@@ -1,0 +1,11 @@
+- name: Create {{ cert_definition.cert_name }}.ext
+  blockinfile:
+    create: yes
+    marker: ""
+    path: "{{ cert_definition.certificate_directory }}{{ cert_definition.cert_name }}.ext"
+    block: |
+      authorityKeyIdentifier=keyid,issuer
+      basicConstraints=CA:FALSE
+      nsCertType = client
+      extendedKeyUsage = clientAuth
+      keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment

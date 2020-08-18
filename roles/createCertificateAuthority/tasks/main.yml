@@ -1,0 +1,45 @@
+---
+# tasks file for createCertificateAuthority
+- name: Install pexpect
+  shell: pip install pexpect
+
+- name: Check if the CA Certificate is already generated
+  stat:
+    path: "{{ certificate_directory}}{{ ca_certificate_name }}.key"
+  register: ca_result
+
+- block:
+    - name: Create CA certificate
+      expect:
+        command: "openssl genrsa -des3 -out {{ ca_certificate_name }}.key {{ ca_bits }}"
+        responses:
+          (?i)Enter pass phrase for(.*): "{{ ca_certificate_passphrase }}"
+          (?i)Verifying - Enter pass phrase for(.*): "{{ ca_certificate_passphrase }}"
+        echo: no
+        chdir: "{{ certificate_directory }}"
+
+    - name: Generate Root Certificate
+      expect:
+        command: "openssl req -x509 -new -nodes -key {{ ca_certificate_name }}.key {{ ca_encryption }} -days {{ ca_days }} -out {{ ca_certificate_name }}.pem"
+        responses:
+          (?i)Enter pass phrase for(.*): "{{ ca_certificate_passphrase }}"
+          (?i)Country Name(.*): "{{ ca_country }}"
+          (?i)State or Province Name(.*): "{{ ca_state }}"
+          (?i)Locality Name(.*): "{{ ca_locality }}"
+          (?i)Organization Name(.*): "{{ ca_organization }}"
+          (?i)Organizational Unit Name(.*): "{{ ca_organization_unit }}"
+          (?i)Common Name(.*): "{{ ca_common_name }}"
+          (?i)Email Address(.*): "{{ ca_email_address }}"
+        echo: no
+        chdir: "{{ certificate_directory }}"
+
+    - name: expose the Root Certificate
+      copy:
+        src: "{{ certificate_directory}}{{ ca_certificate_name }}.pem"
+        dest: "{{ certificate_expose_directory }}"
+        owner: root
+        group: nobody
+        mode: 0755
+        remote_src: yes
+
+  when: ca_result.stat.exists == False

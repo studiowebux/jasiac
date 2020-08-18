@@ -1,0 +1,10 @@
+---
+- name: Remove sendmail
+  package:
+    name: sendmail
+    state: absent
+
+- name: Install mailx
+  package:
+    name: mailx
+    state: latest

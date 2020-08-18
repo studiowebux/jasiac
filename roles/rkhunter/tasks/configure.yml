@@ -1,0 +1,12 @@
+---
+- name: Run rkhunter update
+  shell: "rkhunter --update"
+
+- name: Run rkhunter propupd
+  shell: "rkhunter --propupd"
+
+- name: Update email address for RKHunter daily cron
+  lineinfile:
+    path: /etc/cron.daily/rkhunter
+    regexp: (MAILTO=)(.*)
+    line: "\\1{{ email }}"

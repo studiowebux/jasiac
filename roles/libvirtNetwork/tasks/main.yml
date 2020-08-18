@@ -1,0 +1,5 @@
+---
+# tasks file for libvirtNetwork
+- name: Define libvirt network configuration
+  include: create.yml
+  loop: "{{ networks }}"

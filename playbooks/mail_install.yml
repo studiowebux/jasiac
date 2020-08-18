@@ -1,0 +1,11 @@
+- name: Install and Configure mail with sendgrid
+  hosts: physical
+  become: yes
+
+  vars_prompt:
+    - name: "sendgrid_password"
+      prompt: "Sendgrid API Password"
+      private: yes
+
+  roles:
+    - { role: roles/mail }

@@ -1,0 +1,259 @@
+# Network
+interface_wan: "eth0"
+interface_lan: "eth1"
+bridge_wan: "br2"
+bridge_lan: "br0" # act as a trunk
+network:
+  noip:
+    - vlanid: 170
+      bridge: "{{ bridge_lan }}"
+      conn: "{{ bridge_lan }}.170"
+      networkName: "SECURE"
+    - vlanid: 130
+      bridge: "{{ bridge_lan }}"
+      conn: "{{ bridge_lan }}.130"
+      networkName: "LAB01"
+    - vlanid: 120
+      bridge: "{{ bridge_lan }}"
+      conn: "{{ bridge_lan }}.120"
+      networkName: "LAN"
+  static:
+    - vlanid: 110
+      bridge: "{{ bridge_lan }}"
+      conn: "{{ bridge_lan }}.110"
+      networkName: "CORPO"
+      staticIP: "192.168.110.10/24"
+
+# Mail
+url_port: "smtp.sendgrid.net:587"
+user: "apikey"
+test_recipient: "changeme@local.lab"
+
+# RKHunter
+hostname: "changeme.local.lab"
+email: "changeme@local.lab"
+
+# Libvirt Network
+networks:
+  - fn: INTERNAL_TRUNK
+    bridge_name: br0
+  - fn: WAN
+    bridge_name: br2
+
+#Filesystem
+DATA_drive: "sdb"
+DOCKER_drive: "sdc"
+wipe_disks: no # USE CAREFULLY ! If set to yes|true all data will be lost on both drives.
+
+#Directory Structure
+DATA_partition: "sdb1"
+DOCKER_partition: "sdc1"
+srv_DOCKER: "/srv/DOCKER"
+srv_DATA: "/srv/DATA"
+acl_for_storage: yes
+docker_directories:
+  - "{{ srv_DOCKER }}/data" ## To hold the docker data, instead of /var/lib/docker
+  - "{{ srv_DOCKER }}/volumes" ## To hold the container volumes
+data_directories:
+  - path: "{{ srv_DATA }}/ISO" ## The ISO
+    mode: "0775"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/images" ## The extracted ISO and Boot From LAN images
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/tftpboot"
+    mode: "0755"
+    owner: root
+    group: root
+  - path: "{{ srv_DATA }}/pxe/tftpboot/ipv4"
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/tftpboot/ipv4/LEGACY"
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/tftpboot/ipv4/LEGACY/pxelinux.cfg"
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/tftpboot/ipv4/UEFI"
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/tftpboot/ipv4/UEFI/pxelinux.cfg"
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/tftpboot/ipv6"
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/tftpboot/ipv6/UEFI"
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/tftpboot/ipv6/UEFI/pxelinux.cfg"
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/tftpboot/netboot"
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/ipxe" ## The iPXE Stuffs
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/kickstarts" ## The kickstarts Stuffs
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/scripts" ## The pre/post scripts
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/tools"
+    mode: "0775"
+    owner: nobody
+    group: nobody
+  - path: "{{ srv_DATA }}/tools/certificates"
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/storage"
+    mode: "0777"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/temp"
+    mode: "0776"
+    owner: nobody
+    group: nobody
+  - path: "{{ srv_DATA }}/virtual_machines"
+    mode: "0770"
+    owner: root
+    group: qemu
+  - path: "{{ srv_DATA }}/web_app"
+    mode: "0744"
+    owner: root
+    group: root
+  - path: "{{ srv_DATA }}/image_builder"
+    mode: "0755"
+    owner: root
+    group: root
+  - path: "{{ srv_DATA }}/certificates"
+    mode: "0770"
+    owner: root
+    group: root
+mount_points:
+  - "/ISO"
+  - "/images"
+  - "/tftpboot"
+  - "/storage"
+  - "/tools"
+  - "/temp"
+bind_mounts:
+  - from: "{{ srv_DATA }}/ISO"
+    to: "/ISO"
+  - from: "{{ srv_DATA }}/images"
+    to: "/images"
+  - from: "{{ srv_DATA }}/pxe/tftpboot"
+    to: "/tftpboot"
+  - from: "{{ srv_DATA }}/storage"
+    to: "/storage"
+  - from: "{{ srv_DATA }}/tools"
+    to: "/tools"
+  - from: "{{ srv_DATA }}/temp"
+    to: "/temp"
+
+# Certificate authority
+certificate_directory: "{{ srv_DATA }}/certificates/"
+ca_certificate_name: "changeme_CA"
+ca_certificate_passphrase: ""
+ca_days: 1825
+ca_bits: 4096
+ca_encryption: "-sha256"
+ca_country: "CHANGEME"
+ca_state: "Changeme"
+ca_locality: "Changeme"
+ca_organization: "Changeme
+ca_organization_unit: "Changeme"
+ca_common_name: "changeme.local.lab"
+ca_email_address: "changeme@local.lab"
+certificate_expose_directory: "/tools/certificates/"
+search_domain: "local.lab"
+
+pfsense:
+  - iso_url: "https://nyifiles.pfsense.org/mirror/downloads/pfSense-CE-2.4.5-RELEASE-amd64.iso.gz"
+    iso_filename: "pfSense-CE-2.4.5-RELEASE-amd64.iso"
+    iso_destination: "/ISO/PFSense/"
+    volume: "{{ srv_DATA }}/virtual_machines/PFSense/"
+    vm_name: "fw"
+    ram: 2048
+    vcpus: 2
+    os_variant: "freebsd11.2"
+    networks:
+      - "network=WAN,model=virtio"
+      - "network=INTERNAL_TRUNK,model=virtio"
+    disks:
+      - "path={{ srv_DATA }}/virtual_machines/PFSense/disk_01.qcow2,size=16,bus=virtio,format=qcow2"
+
+# PFSense Certificates
+pfsense_user:
+  type: "client" # server | client | ssl
+  cert_name: "changeme"
+  ca_certificate_name: "changeme_CA"
+  certificate_directory: "{{ srv_DATA }}/certificates/"
+  ca_certificate_passphrase: ""
+  cert_days: 730
+  cert_bits: 4096
+  cert_encryption: "-sha256"
+  cert_country: "Changeme"
+  cert_state: "Changeme"
+  cert_locality: "Changeme"
+  cert_organization: "Changeme"
+  cert_organization_unit: "Changeme"
+  cert_email_address: "changeme@local.lab"
+  certificate_expose_directory: "/tools/certificates/"
+
+pfsense_cert:
+  type: "server" # server | client | ssl
+  cert_name: "fw"
+  ca_certificate_name: "changeme_CA"
+  certificate_directory: "{{ srv_DATA }}/certificates/"
+  ca_certificate_passphrase: ""
+  domain_name: "local.lab"
+  cert_days: 730
+  cert_bits: 4096
+  cert_encryption: "-sha256"
+  cert_country: "Changeme"
+  cert_state: "Changeme"
+  cert_locality: "Changeme"
+  cert_organization: "Changeme"
+  cert_organization_unit: "Changeme"
+  cert_email_address: "changeme@local.lab"
+  certificate_expose_directory: "/tools/certificates/"
+  alt_name: "fw.local.lab"
+
+client:
+  - iso_url: "http://centos.mirror.ca.planethoster.net/7.8.2003/isos/x86_64/CentOS-7-x86_64-LiveGNOME-2003.iso"
+    iso_filename: "CentOS-7-x86_64-LiveGNOME-2003.iso"
+    iso_destination: "/ISO/centos/7.8.2003/"
+    volume: "{{ srv_DATA }}/virtual_machines/Client/"
+    vm_name: "client"
+    ram: 4096
+    vcpus: 2
+    os_variant: "generic"
+    autostart: "no"
+    networks: 
+      - "network=INTERNAL_TRUNK,model=virtio"
+      - "network=WAN,model=virtio" # Insecure, but it allows to configure everything, and set a backdoor in case the network configuration is bad.
+
+# Network configuration after launching PFSense
+physical_lan_gateway: "192.168.120.1"
+physical_lan_ip: "192.168.120.10/24"
+physical_lan_bridge_name: "vlan-br0.120"
+physical_lan_dns: "192.168.120.1"
+physical_wan_bridge_name: "br2"

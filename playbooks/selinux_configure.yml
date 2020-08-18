@@ -1,0 +1,6 @@
+---
+- name: Configure SELinux
+  hosts: physical
+  become: yes
+  roles:
+    - { role: roles/selinux }

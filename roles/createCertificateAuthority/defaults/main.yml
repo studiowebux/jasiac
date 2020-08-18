@@ -1,0 +1,16 @@
+---
+# defaults file for createCertificateAuthority
+certificate_directory: "/srv/DATA/certificates/"
+ca_certificate_name: "changeme_CA"
+ca_certificate_passphrase: ""
+ca_days: 1825
+ca_bits: 4096
+ca_encryption: "-sha256"
+ca_country: "ChangeMe"
+ca_state: "ChangeMe"
+ca_locality: "ChangeMe"
+ca_organization: "ChangeMe"
+ca_organization_unit: "ChangeMe"
+ca_common_name: "changeme.local.lab"
+ca_email_address: "changeme@local.lab"
+certificate_expose_directory: "/tools/certificates/"

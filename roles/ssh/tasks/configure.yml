@@ -1,0 +1,13 @@
+---
+- name: Configure SSH
+  template:
+    src: sshd_config
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: "0600"
+    backup: yes
+
+- name: Configure SELinux to authorize the port `{{ sshPort }}`
+  shell: semanage port -a -t ssh_port_t -p tcp {{ sshPort }}
+  when: ssh_port is defined and ssh_port != "" and ssh_port != "22"

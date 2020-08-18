@@ -1,0 +1,12 @@
+---
+- name: Configure `mail`
+  blockinfile:
+    path: "/etc/mail.rc"
+    mode: "0750"
+    owner: root
+    group: root
+    block: |
+      set smtp=smtp://{{ url_port }}
+      set smtp-auth=login
+      set smtp-auth-user={{ user }}
+      set smtp-auth-password={{ sendgrid_password }}

@@ -1,0 +1,6 @@
+---
+# tasks file for selinux
+- name: Configure SELinux in {{ wantedState}} mode
+  selinux:
+    state: "{{ wantedState }}"
+    policy: targeted

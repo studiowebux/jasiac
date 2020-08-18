@@ -1,0 +1,3 @@
+---
+- name: Test the configuration
+  shell: "echo 'Test the Sendgrid Configuration' | mail -s 'Welcome !' {{ test_recipient }}"

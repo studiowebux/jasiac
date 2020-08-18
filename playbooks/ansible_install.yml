@@ -1,0 +1,11 @@
+- name: Install Ansible
+  hosts: physical
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: Install Ansible
+      package:
+        name:
+          - ansible
+        state: latest

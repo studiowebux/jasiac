@@ -1,0 +1,23 @@
+---
+- name: Install epel-release
+  package:
+    name: "epel-release"
+    state: latest
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Install dependencies
+  package:
+    name: "python-pip"
+    state: latest
+
+- name: Install packages
+  package:
+    name:
+      - "qemu-kvm"
+      - "libvirt"
+      - "libvirt-python"
+      - "libguestfs-tools"
+      - "virt-install"
+      - "virt-manager"
+    state: latest
+  notify: Start and Enable libvirtd

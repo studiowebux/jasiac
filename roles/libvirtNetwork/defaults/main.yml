@@ -1,0 +1,7 @@
+---
+# defaults file for libvirtNetwork
+networks:
+  - fn: INTERNAL_TRUNK
+    bridge_name: br0
+  - fn: WAN
+    bridge_name: br2

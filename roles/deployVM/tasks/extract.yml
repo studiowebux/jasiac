@@ -1,0 +1,12 @@
+---
+- name: Check if the iso is already downloaded
+  stat:
+    path: "{{ iso_destination }}{{ iso_filename }}"
+  register: iso_downloaded
+
+- debug:
+    msg: "{{ iso_downloaded }}"
+    
+- name: Extract `.gz`
+  shell: "gunzip {{ iso_destination }}{{ iso_filename }}.gz"
+  when: iso_downloaded.stat.exists == False

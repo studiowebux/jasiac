@@ -1,0 +1,4 @@
+---
+# defaults file for rkhunter
+hostname: "changeme.local.lab"
+email: "tommy@studiowebux.com"

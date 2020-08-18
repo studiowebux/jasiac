@@ -1,0 +1,6 @@
+---
+- name: Configure SSHd
+  hosts: physical
+  become: yes
+  roles:
+    - { role: roles/ssh }

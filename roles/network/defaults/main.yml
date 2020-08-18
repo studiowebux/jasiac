@@ -1,0 +1,26 @@
+---
+# defaults file for network
+interface_wan: "eth0"
+interface_lan: "eth1"
+bridge_wan: "br2"
+bridge_lan: "br0" # act as a trunk
+network:
+  noip:
+    - vlanid: 170
+      bridge: "{{ bridge_lan }}"
+      conn: "{{ bridge_lan }}.70"
+      networkName: "SECURE"
+    - vlanid: 130
+      bridge: "{{ bridge_lan }}"
+      conn: "{{ bridge_lan }}.30"
+      networkName: "LAB01"
+    - vlanid: 120
+      bridge: "{{ bridge_lan }}"
+      conn: "{{ bridge_lan }}.20"
+      networkName: "LAN"
+  static:
+    - vlanid: 110
+      bridge: "{{ bridge_lan }}"
+      conn: "{{ bridge_lan }}.10"
+      networkName: "CORPO"
+      staticIP: "192.168.110.10/24"

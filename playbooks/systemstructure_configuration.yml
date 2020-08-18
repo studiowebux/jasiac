@@ -1,0 +1,6 @@
+---
+- name: Configure system structure
+  hosts: physical
+  become: yes
+  roles:
+    - { role: roles/systemStructure }

@@ -1,0 +1,13 @@
+---
+- name: Create `VLAN {{ item.vlanid }}` ({{ item.networkName }}) on `{{ item.bridge }}` as `{{ item.conn }}` with no IPV4/6
+  shell: |
+    nmcli connection add type vlan \
+    ifname {{ item.conn }} \
+    con-name vlan-{{ item.conn }} \
+    vlan.parent {{ item.bridge }} \
+    vlan.id {{ item.vlanid }} \
+    ipv4.method disabled \
+    ipv4.never-default true \
+    ipv6.method ignore \
+    ipv6.never-default true
+  when: "item.conn not in ansible_facts.interfaces"

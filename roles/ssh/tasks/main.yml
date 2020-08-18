@@ -1,0 +1,6 @@
+---
+# tasks file for ssh
+
+- include: "install.yml"
+- include: "configure.yml"
+- include: "check.yml"

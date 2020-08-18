@@ -1,0 +1,5 @@
+---
+# defaults file for filesystem
+DATA_drive: "md0"
+DOCKER_drive: "sda"
+wipe_disks: no

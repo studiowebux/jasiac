@@ -1,0 +1,24 @@
+---
+- name: Create virsh network configuration for {{ item.fn }} using {{ item.bridge_name }}
+  blockinfile:
+    path: "/tmp/{{ item.fn }}.xml"
+    create: yes
+    marker: "<!-- {mark} {{ item.fn }} - {{ item.bridge_name }} -->"
+    block: |
+      <network>
+        <name>{{ item.fn }}</name>
+        <forward mode='bridge' />
+        <bridge name='{{ item.bridge_name }}' />
+      </network>
+
+- name: Check {{ item.fn }} configuration if not present
+  shell: "virsh net-info {{ item.fn }}"
+  register: libvirt_interface_result
+  ignore_errors: True
+
+- name: Apply {{ item.fn }} if not present
+  shell: |
+    virsh net-define /tmp/{{ item.fn }}.xml && \
+    virsh net-autostart {{ item.fn }} && \
+    virsh net-start {{ item.fn }}
+  when: libvirt_interface_result.rc != 0

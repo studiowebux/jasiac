@@ -1,0 +1,6 @@
+---
+- name: Install and Configure libvirt
+  hosts: physical
+  become: yes
+  roles:
+    - { role: roles/libvirt }

@@ -1,0 +1,17 @@
+---
+# tasks file for generateCertificate
+- include: prepare.yml
+
+- include: generate_server_ssl.yml
+  when: cert_definition.type == 'server'
+
+- include: generate_ssl.yml
+  when: cert_definition.type == 'ssl'
+
+- include: generate_user_ssl.yml
+  when: cert_definition.type == 'client'
+
+- include: generate.yml
+
+- include: link_web_server.yml
+  when: cert_definition.type == "ssl"

@@ -1,0 +1,5 @@
+---
+# tasks file for first_user
+
+- include: create_group.yml
+- include: create_user.yml

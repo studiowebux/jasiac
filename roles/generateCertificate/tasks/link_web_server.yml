@@ -1,0 +1,12 @@
+---
+- name: Create symlink to `{{ cert_definition.web_server_path }}{{ cert_definition.cert_name }}.key`
+  file:
+    src: "{{ cert_definition.certificate_directory }}{{ cert_definition.cert_name }}.key"
+    dest: "{{ cert_definition.web_server_path }}{{ cert_definition.cert_name }}.key"
+    state: link
+
+- name: Create symlink to `{{ cert_definition.web_server_path }}{{ cert_definition.cert_name }}.crt`
+  file:
+    src: "{{ cert_definition.certificate_directory }}{{ cert_definition.cert_name }}.crt"
+    dest: "{{ cert_definition.web_server_path }}{{ cert_definition.cert_name }}.crt"
+    state: link

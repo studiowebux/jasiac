@@ -1,0 +1,5 @@
+- name: Configure Network
+  hosts: physical
+  become: yes
+  roles:
+    - { role: roles/network }

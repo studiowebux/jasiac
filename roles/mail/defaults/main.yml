@@ -1,0 +1,6 @@
+---
+# defaults file for mail
+
+url_port: "smtp.sendgrid.net:587"
+user: "apikey"
+test_recipient: "tommy@studiowebux.com"

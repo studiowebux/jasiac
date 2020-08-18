@@ -1,0 +1,9 @@
+---
+- name: Check if virtualization (VT-x) is enabled in the BIOS
+  shell: "lscpu | grep Virtualization"
+  register: virtualization_result
+
+- name: fail if VT-x not in the list
+  fail:
+    msg: "The virtualization is disabled"
+  when: "'VT-x' not in virtualization_result.stdout"

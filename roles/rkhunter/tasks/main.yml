@@ -1,0 +1,6 @@
+---
+# tasks file for rkhunter
+- include: "install.yml"
+- include: "configure.yml"
+- include: "job.yml"
+- include: "test.yml"

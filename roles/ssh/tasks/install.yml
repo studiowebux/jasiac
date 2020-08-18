@@ -1,0 +1,6 @@
+---
+- name: Install semanage
+  package:
+    name: policycoreutils-python
+    state: latest
+  when: ssh_port is defined and ssh_port != ""

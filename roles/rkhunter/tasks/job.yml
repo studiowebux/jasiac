@@ -1,0 +1,16 @@
+---
+- name: Configure rkhunter to run every month
+  blockinfile:
+    path: "/etc/cron.monthly/rkhunter.sh"
+    create: yes
+    mode: "0755"
+    owner: root
+    group: root
+    marker: "# {mark}"
+    block: |
+      #!/bin/sh
+      (
+      /usr/bin/rkhunter --versioncheck
+      /usr/bin/rkhunter --update
+      /usr/bin/rkhunter --cronjob --report-warnings-only
+      ) | /bin/mail -s 'rkhunter Monthly Run ({{ hostname }})' {{ email }}

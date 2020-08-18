@@ -1,0 +1,18 @@
+---
+- name: Check if `bridge-slave-{{ interface }}` exists
+  stat:
+    path: /etc/sysconfig/network-scripts/bck-{{ interface }}
+  register: interface_result
+
+- name: Attach slave if not already done
+  block:
+    - name: Attach slave `{{ interface }}` to `{{ bridge }}`
+      shell: |
+        nmcli connection add type bridge-slave \
+          ifname {{ interface }} \
+          con-name bridge-slave-{{ interface }} \
+          master {{ bridge }}
+
+    - name: Move the default `{{ interface }}` configuration file to `bck-{{ interface }}`
+      shell: mv /etc/sysconfig/network-scripts/ifcfg-{{ interface }} /etc/sysconfig/network-scripts/bck-{{ interface }}
+  when: not interface_result.stat.exists

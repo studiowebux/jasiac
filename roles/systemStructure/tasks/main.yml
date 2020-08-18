@@ -1,0 +1,72 @@
+---
+# tasks file for systemStructure
+## Create Mount point for Docker
+- name: Create {{ srv_DOCKER }}
+  file:
+    path: "{{ srv_DOCKER }}"
+    state: directory
+
+## Create Mount point for Data
+- name: Create {{ srv_DATA }}
+  file:
+    path: "{{ srv_DATA }}"
+    state: directory
+
+## Mount DATA
+- name: mount /dev/{{ DATA_partition }} to {{ srv_DATA }}
+  mount:
+    path: "{{ srv_DATA }}"
+    src: "/dev/{{ DATA_partition }}"
+    state: mounted
+    fstype: xfs
+
+## Mount DOCKER
+- name: mount /dev/{{ DOCKER_partition }} to {{ srv_DOCKER }}
+  mount:
+    path: "{{ srv_DOCKER }}"
+    src: "/dev/{{ DOCKER_partition }}"
+    state: mounted
+    fstype: xfs
+
+# DOCKER Structure
+- block:
+    - name: Create DOCKER Directories
+      file:
+        path: "{{ item }}"
+        state: directory
+      with_items: "{{ docker_directories }}"
+
+# DATA Structure
+- block:
+    - name: Create DATA Directories
+      file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: "{{ item.mode }}"
+        owner: "{{ item.owner }}"
+        group: "{{ item.group }}"
+      with_items: "{{ data_directories }}"
+
+# Create Mount Point
+- block:
+    - name: Create Mount Point
+      file:
+        path: "{{ item }}"
+        state: directory
+      with_items: "{{ mount_points }}"
+
+# Bind Mount
+- block:
+    - name: Bind mount {{ item.from }} to {{ item.to }}
+      mount:
+        path: "{{ item.to }}"
+        src: "{{ item.from }}"
+        opts: bind
+        state: mounted
+        fstype: none
+      with_items: "{{ bind_mounts }}"
+
+# It allows to force the group with RWX
+- name: Set ACL to /storage
+  shell: "setfacl -Rdm g:nobody:rwx /storage/"
+  when: acl_for_storage

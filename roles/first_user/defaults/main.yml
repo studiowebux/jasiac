@@ -1,0 +1,8 @@
+---
+# defaults file for first_user
+username: "operator"
+groupname: "admin_webux"
+comment: "operator"
+passphrase: "0perat0r"
+userID: "1337"
+groupID: "1338"

@@ -1,0 +1,26 @@
+---
+# Note: use this command to generate an encrypted password :
+## python -c 'import crypt,getpass; print(crypt.crypt(getpass.getpass(), crypt.mksalt(crypt.METHOD_SHA512)))'
+
+- name: Create first user and group
+  hosts: physical
+  remote_user: root
+  become: yes
+
+  vars_prompt:
+    - name: username
+      prompt: "What is your username ?"
+      private: no
+
+    - name: password
+      prompt: "What is your password (encrypted) ?"
+
+    - name: passphrase
+      prompt: "What is your passphrase ?"
+
+    - name: groupname
+      prompt: "What is the admin group name ?"
+      private: no
+
+  roles:
+    - { role: roles/first_user }

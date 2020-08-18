@@ -1,0 +1,6 @@
+---
+# tasks file for mail
+
+- include: "install.yml"
+- include: "configure.yml"
+- include: "test.yml"

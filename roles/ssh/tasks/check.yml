@@ -1,0 +1,4 @@
+---
+- name: Check the SSHd configuration
+  shell: sshd -t
+  notify: Restart sshd

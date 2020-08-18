@@ -1,0 +1,37 @@
+---
+# tasks file for utilities
+- name: Install Tools and Utilities
+  package:
+    name:
+      - nano
+      - "@Development tools"
+      - kernel-headers
+      - epel-release
+      - wget
+      - openssl-devel
+      - openssl
+      - git
+      - unzip
+      - net-tools
+      - bzip2
+      - nmap
+      - tmux
+      - tree
+      - screen
+      - bind-utils
+      - bridge-utils
+      - tcpdump
+      - python-devel
+      - ipmitool
+      - jq
+      - smartmontools
+      - psmisc
+      - net-snmp
+      - net-snmp-utils
+      - iftop
+      - python36
+      - setroubleshoot-server
+    state: latest
+
+- name: Install Python Module pexpect
+  shell: "pip install pexpect"

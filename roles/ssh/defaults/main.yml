@@ -1,0 +1,4 @@
+---
+# defaults file for ssh
+passwordAuthentication: "yes"
+sshPort: 22

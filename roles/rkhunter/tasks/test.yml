@@ -1,0 +1,17 @@
+---
+- name: Launch rkhunter check
+  shell: "rkhunter --check --sk"
+  register: rkhunter_result
+  ignore_errors: yes
+
+- name: Print Output
+  debug:
+    msg: "{{ rkhunter_result.stdout }}"
+    verbosity: 1
+
+- name: Get log
+  shell: cat /var/log/rkhunter/rkhunter.log
+  register: rkhunter_output
+
+- debug:
+    msg: "{{ rkhunter_output.stdout_lines }}"

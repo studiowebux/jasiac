@@ -1,0 +1,5 @@
+---
+# handlers file for selinux
+- name: Reboot system
+  reboot:
+    reboot_timeout: 1200

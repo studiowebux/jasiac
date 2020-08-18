@@ -1,0 +1,6 @@
+---
+- name: Install Utilities
+  hosts: physical
+  become: yes
+  roles:
+    - { role: roles/utilities }

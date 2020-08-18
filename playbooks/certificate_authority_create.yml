@@ -1,0 +1,12 @@
+---
+- name: Create a certificate authority
+  hosts: physical
+  become: yes
+
+  vars_prompt:
+    - name: "ca_certificate_passphrase"
+      prompt: "Create new Passphrase for the Certificate"
+      private: yes
+
+  roles:
+    - { role: roles/createCertificateAuthority }

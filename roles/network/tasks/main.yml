@@ -1,0 +1,37 @@
+---
+# tasks file for network
+- include: "install.yml"
+
+- include: "configure.yml"
+
+- include: "create_bridge.yml"
+  vars:
+    bridge: "{{ bridge_lan }}"
+
+- include: "create_bridge.yml"
+  vars:
+    bridge: "{{ bridge_wan }}"
+
+- include: "bridge_up.yml"
+  vars:
+    bridge: "{{ bridge_lan }}"
+
+- include: "bridge_up.yml"
+  vars:
+    bridge: "{{ bridge_wan }}"
+
+- include: "attach_slave.yml"
+  vars:
+    interface: "{{ interface_lan }}"
+    bridge: "{{ bridge_lan }}"
+
+- include: "attach_slave.yml"
+  vars:
+    interface: "{{ interface_wan }}"
+    bridge: "{{ bridge_wan }}"
+
+- include: "vlan_noip.yml"
+  with_items: "{{ network.noip }}"
+
+- include: "vlan_staticip.yml"
+  with_items: "{{ network.static }}"

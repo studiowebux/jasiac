@@ -1,0 +1,6 @@
+---
+- name: Configure libvirt Network
+  hosts: physical
+  become: yes
+  roles:
+    - { role: roles/libvirtNetwork }

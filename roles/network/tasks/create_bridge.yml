@@ -1,0 +1,12 @@
+---
+- name: Create Bridge `{{ bridge }}` with no IPV4/6 IP
+  shell: |
+    nmcli connection add type bridge \
+      ifname {{ bridge }} \
+      con-name {{ bridge }} \
+      802-3-ethernet.mtu 1500 \
+      ipv4.method dhcp \
+      ipv4.never-default false \
+      ipv6.method ignore \
+      ipv6.never-default true
+  when: "bridge not in ansible_facts.interfaces"

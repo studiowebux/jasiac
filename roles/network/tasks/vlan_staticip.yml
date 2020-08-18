@@ -1,0 +1,11 @@
+---
+- name: Create `VLAN {{ item.vlanid }}` ({{ item.networkName }}) on `{{ item.bridge }}` as `{{ item.conn }}` with Static IP `{{ item.staticIP }}`
+  shell: |
+    nmcli connection add type vlan \
+      ifname {{ item.conn }} \
+      con-name vlan-{{ item.conn }} \
+      vlan.parent {{ item.bridge }} \
+      vlan.id {{ item.vlanid }} \
+      ipv4.method manual \
+      ipv4.addresses "{{ item.staticIP }}"
+  when: "item.conn not in ansible_facts.interfaces"

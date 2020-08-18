@@ -1,0 +1,15 @@
+---
+- name: Launch the VM
+  shell: "bash /tmp/{{ vm_name }}.sh"
+
+- name: Print VNC information
+  shell: "virsh dumpxml {{ vm_name }} | grep vnc"
+  register: vnc_info
+
+- name: Print VNC information
+  debug:
+    msg: "{{ vnc_info.stdout }}"
+
+- name: Set autostart to the VM
+  shell: "virsh autostart {{ vm_name }}"
+  when: "autostart == 'yes'"

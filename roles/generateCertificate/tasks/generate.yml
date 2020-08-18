@@ -1,0 +1,8 @@
+---
+- name: Generate the Certificate
+  expect:
+    command: "openssl x509 -req -in {{ cert_definition.cert_name }}.csr -CA {{ cert_definition.ca_certificate_name }}.pem -CAkey {{ cert_definition.ca_certificate_name }}.key -CAcreateserial -out {{ cert_definition.cert_name }}.crt -days {{ cert_definition.cert_days }} {{ cert_definition.cert_encryption }} -extfile {{ cert_definition.cert_name }}.ext"
+    responses:
+      (?i)Enter pass phrase for(.*): "{{ ca_certificate_passphrase }}"
+    echo: no
+    chdir: "{{ cert_definition.certificate_directory }}"

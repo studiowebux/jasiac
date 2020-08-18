@@ -1,0 +1,17 @@
+---
+- name: Check if the iso is already downloaded
+  stat:
+    path: "{{ iso_destination }}{{ iso_filename }}"
+  register: iso_downloaded
+
+- debug:
+    msg: "{{ iso_downloaded }}"
+
+## if not already downloaded
+- name: Download the ISO from {{ iso_url }} -> {{ iso_destination }}
+  block:
+    - name: Download the ISO
+      get_url:
+        url: "{{ iso_url }}"
+        dest: "{{ iso_destination }}"
+  when: iso_downloaded.stat.exists == False

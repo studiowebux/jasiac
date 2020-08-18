@@ -1,0 +1,5 @@
+---
+# tasks file for libvirt
+
+- include: "check.yml"
+- include: "install.yml"

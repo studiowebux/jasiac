@@ -1,0 +1,14 @@
+- name: Create {{ cert_definition.cert_name }}.ext
+  blockinfile:
+    create: yes
+    marker: ""
+    path: "{{ cert_definition.certificate_directory }}{{ cert_definition.cert_name }}.ext"
+    block: |
+      authorityKeyIdentifier=keyid,issuer
+      basicConstraints=CA:FALSE
+      extendedKeyUsage = serverAuth
+      keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+      subjectAltName = @alt_names
+
+      [alt_names]
+      DNS.1 = {{ cert_definition.alt_name }}

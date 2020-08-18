@@ -1,0 +1,17 @@
+---
+- name: Create user {{ username }}
+  user:
+    name: "{{ username }}"
+    groups:
+      - "{{ groupname }}"
+      - "wheel"
+    append: yes
+    shell: /bin/bash
+    comment: "{{ comment }}"
+    password: "{{ password }}"
+    uid: "{{ userID }}"
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+    ssh_key_file: .ssh/id_rsa
+    ssh_key_passphrase: "{{ passphrase }}"
+  no_log: True

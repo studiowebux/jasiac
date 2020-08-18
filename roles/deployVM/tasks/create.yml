@@ -1,0 +1,100 @@
+---
+- name: Set fact
+  set_fact:
+    vmName: "{{ vm_name }}"
+
+- name: Remove the file if exists
+  file:
+    path: /tmp/{{ vmName }}.sh
+    state: absent
+
+- name: Create command
+  blockinfile:
+    path: /tmp/{{ vmName }}.sh
+    create: yes
+    marker: "# {mark}"
+    marker_begin: "First Step"
+    block: |
+      virt-install \
+      --virt-type=kvm \
+      --name {{ vmName }} \
+      --ram {{ ram }} \
+      --vcpus={{ vcpus }} \
+      --os-variant={{ os_variant|default('generic') }} \
+      --graphics {{ graphics }} \
+
+- debug:
+    msg: "{{ networks }}"
+
+- name: Add network configuration
+  blockinfile:
+    path: /tmp/{{ vmName }}.sh
+    create: yes
+    marker: "# {mark}"
+    marker_begin: "Network Step - {{ net_item }}"
+    block: |
+      --network={{ net_item }} \
+  with_items: "{{ networks }}"
+  loop_control:
+    loop_var: net_item
+  when: networks is defined and (networks|length > 0)
+
+- debug:
+    msg: "{{ disks }}"
+
+- name: Add disk configuration
+  blockinfile:
+    path: /tmp/{{ vmName }}.sh
+    create: yes
+    marker: "# {mark}"
+    marker_begin: "Disk Step - {{ disk_item }}"
+    block: |
+      --disk {{ disk_item }} \
+  with_items: "{{ disks }}"
+  loop_control:
+    loop_var: disk_item
+  when: disks is defined and (disks|length > 0)
+
+- name: No disk configuration
+  blockinfile:
+    path: /tmp/{{ vmName }}.sh
+    create: yes
+    marker: "# {mark}"
+    marker_begin: "No Disk Step - {{ item }}"
+    block: |
+      --disk none \
+  when: disks is undefined or (disks|length == 0)
+
+- name: Add kickstart
+  blockinfile:
+    path: /tmp/{{ vmName }}.sh
+    create: yes
+    marker: "# {mark}"
+    marker_begin: "Kickstart Step"
+    block: |
+      --location {{ iso_destination }}{{ iso_filename }} \
+      --initrd-inject="{{ iso_destination }}/{{ kickstart_name }}" \
+      --extra-args "ks=file:/{{ kickstart_name }}" \
+  when: "kickstart_name is defined and kickstart_name != ''"
+
+- name: Add CDROM
+  blockinfile:
+    path: /tmp/{{ vmName }}.sh
+    create: yes
+    marker: "# {mark}"
+    marker_begin: "CDROM Step"
+    block: |
+      --cdrom={{ iso_destination }}{{ iso_filename }} \
+  when: "kickstart_name is not defined or kickstart_name == ''"
+
+- name: Close the loop
+  blockinfile:
+    path: /tmp/{{ vmName }}.sh
+    create: yes
+    marker: "# {mark}"
+    marker_end: "Last Step"
+    block: |
+      --noautoconsole
+
+- name: Remove comments added by blockinfile
+  shell: sed -i '/^#.*/d' /tmp/{{ vmName }}.sh

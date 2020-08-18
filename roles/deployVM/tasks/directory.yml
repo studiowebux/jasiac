@@ -1,0 +1,10 @@
+---
+- name: Create ISO directory
+  file:
+    path: "{{ iso_destination }}"
+    state: directory
+
+- name: Create VM directory ({{ volume }})
+  file:
+    path: "{{ volume }}"
+    state: directory

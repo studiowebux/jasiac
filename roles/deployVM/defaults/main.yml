@@ -1,0 +1,16 @@
+---
+# defaults file for deployVM
+iso_destination: ""
+iso_filename: ""
+iso_url: ""
+volume: ""
+kickstart_name: ""
+kickstarts_dir: ""
+vm_name: ""
+ram: ""
+vcpus: ""
+os_variant: "generic"
+graphics: "vnc"
+networks: []
+disks: []
+autostart: "yes"

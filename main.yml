@@ -1,0 +1,49 @@
+- name: Deploy the complete infrastructure
+  hosts: physical
+  gather_facts: yes
+
+# Install the OS using the Kickstart
+
+# Create the first User
+
+# Define the host configuration
+
+# Launch this play : ansible-playbook -i inventory/ main.yml --ask-become --user [USER]
+
+- import_playbook: playbooks/ssh_configure.yml
+
+- import_playbook: playbooks/network_configure.yml
+
+- import_playbook: playbooks/mail_install.yml
+
+- import_playbook: playbooks/rkhunter_install.yml
+
+- import_playbook: playbooks/libvirt_install.yml
+- import_playbook: playbooks/libvirt_configure_network.yml
+
+# RAID creation using mdadm is optional (earth.webux.lab uses the HP Raid Controller)
+
+# This playbook can destroy the data on specified drives, use carefully
+- import_playbook: playbooks/filesystem_configuration.yml
+
+- import_playbook: playbooks/systemstructure_configuration.yml
+
+- import_playbook: playbooks/certificate_authority_create.yml
+
+- import_playbook: playbooks/ansible_install.yml
+
+- import_playbook: playbooks/utilities_install.yml
+
+- import_playbook: playbooks/pfsense_deploy.yml
+
+# Pause ! You must install PFSense manually on the VM.
+
+- import_playbook: playbooks/pfsense_server_cert.yml
+
+- import_playbook: playbooks/pfsense_user_cert.yml
+
+- import_playbook: playbooks/client_deploy.yml
+
+# Pause ! Test PFsense Network configuration with the VM.
+
+- import_playbook: playbooks/network_edit.yml

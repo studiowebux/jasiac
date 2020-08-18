@@ -1,0 +1,10 @@
+---
+# tasks file for deployVM
+- include: "directory.yml"
+- include: "iso.yml"
+- include: "extract.yml"
+  when: "'.gz' in iso_url"
+- include: "kickstart.yml"
+  when: kickstart_name|length > 0
+- include: "create.yml"
+- include: "launch.yml"

@@ -1,0 +1,16 @@
+---
+- name: Copy `{{ vm_name }}` Kickstart to `{{ iso_destination }}`
+  copy:
+    src: "{{ kickstart_name }}"
+    dest: "{{ iso_destination }}/{{ kickstart_name }}"
+    mode: "0755"
+    owner: root
+    group: nobody
+
+- name: Copy `{{ vm_name }}` Kickstart to `{{ kickstarts_dir }}`
+  copy:
+    src: "{{ kickstart_name }}"
+    dest: "{{ kickstarts_dir }}/{{ kickstart_name }}"
+    mode: "0755"
+    owner: root
+    group: nobody

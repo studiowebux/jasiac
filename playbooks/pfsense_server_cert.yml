@@ -1,0 +1,15 @@
+---
+- name: Generate PFSense Server certificate
+  hosts: physical
+  become: yes
+
+  vars_prompt:
+    - name: "ca_certificate_passphrase"
+      prompt: "CA Certificate Passphrase"
+      private: yes
+
+  vars:
+    cert_definition: "{{ pfsense_cert }}"
+
+  roles:
+    - { role: roles/generateCertificate }

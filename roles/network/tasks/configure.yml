@@ -1,0 +1,27 @@
+---
+- name: Disable `netfilter` on bridge interfaces
+  blockinfile:
+    insertafter: EOF
+    marker: "# {mark} Added by `Ansible network role`"
+    block: |
+      net.bridge.bridge-nf-call-ip6tables = 0
+      net.bridge.bridge-nf-call-iptables = 0
+      net.bridge.bridge-nf-call-arptables = 0
+      net.bridge.bridge-nf-filter-vlan-tagged = 0
+    path: /etc/sysctl.conf
+
+- name: Execute modprobe `8021q` if not already loaded
+  shell: "modprobe --first-time 8021q"
+
+- name: Execute modprobe `br_netfilter` if not already loaded
+  shell: "modprobe br_netfilter"
+
+- name: Reload `sysctl`
+  shell: sysctl -p
+  register: sysctl_cmd_result
+  ignore_errors: yes
+
+- name: Fail if unable to reload the sysctl rules
+  fail:
+    msg: "Please check the /etc/sysctl.conf file"
+  when: sysctl_cmd_result.rc != 0

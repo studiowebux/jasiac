@@ -1,0 +1,53 @@
+---
+- name: Remove existing files from `{{ cert_definition.certificate_directory }}{{ cert_definition.cert_name }}.[key|csr|ext]`
+  file:
+    path: "{{ cert_definition.certificate_directory}}{{ item }}"
+    state: absent
+  with_items:
+    - "{{ cert_definition.cert_name }}.key"
+    - "{{ cert_definition.cert_name }}.csr"
+    - "{{ cert_definition.cert_name }}.ext"
+
+- name: Generate Private key
+  shell: openssl genrsa -out {{ cert_definition.cert_name }}.key {{ cert_definition.cert_bits }}
+  args:
+    chdir: "{{ cert_definition.certificate_directory}}"
+
+- block:
+    - name: Generate signature request
+      expect:
+        command: "openssl req -new -key {{ cert_definition.cert_name }}.key {{ cert_definition.cert_encryption }} -out {{ cert_definition.cert_name }}.csr"
+        responses:
+          (?i)Enter pass phrase for(.*): "{{ ca_certificate_passphrase }}"
+          (?i)Country Name(.*): "{{ cert_definition.cert_country }}"
+          (?i)State or Province Name(.*): "{{ cert_definition.cert_state }}"
+          (?i)Locality Name(.*): "{{ cert_definition.cert_locality }}"
+          (?i)Organization Name(.*): "{{ cert_definition.cert_organization }}"
+          (?i)Organizational Unit Name(.*): "{{ cert_definition.cert_organization_unit }}"
+          (?i)Common Name(.*): "{{ cert_definition.cert_name }}.{{ cert_definition.domain_name }}"
+          (?i)Email Address(.*): "{{ cert_definition.cert_email_address }}"
+          (?i)A challenge password(.*): ""
+          (?i)An optional company name(.*): ""
+        echo: no
+        chdir: "{{ cert_definition.certificate_directory }}"
+
+  when: cert_definition.type != "client"
+
+- block:
+    - name: Generate signature request
+      expect:
+        command: "openssl req -new -key {{ cert_definition.cert_name }}.key {{ cert_definition.cert_encryption }} -out {{ cert_definition.cert_name }}.csr"
+        responses:
+          (?i)Enter pass phrase for(.*): "{{ ca_certificate_passphrase }}"
+          (?i)Country Name(.*): "{{ cert_definition.cert_country }}"
+          (?i)State or Province Name(.*): "{{ cert_definition.cert_state }}"
+          (?i)Locality Name(.*): "{{ cert_definition.cert_locality }}"
+          (?i)Organization Name(.*): "{{ cert_definition.cert_organization }}"
+          (?i)Organizational Unit Name(.*): "{{ cert_definition.cert_organization_unit }}"
+          (?i)Common Name(.*): "{{ cert_definition.cert_name }}"
+          (?i)Email Address(.*): "{{ cert_definition.cert_email_address }}"
+          (?i)A challenge password(.*): ""
+          (?i)An optional company name(.*): ""
+        echo: no
+        chdir: "{{ cert_definition.certificate_directory }}"
+  when: cert_definition.type == "client"
