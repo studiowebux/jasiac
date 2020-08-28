@@ -1,0 +1,22 @@
+include "/etc/rndc.key";
+
+zone "{{ search_domain }}" {
+	type master;
+	notify no;
+	file "/etc/named/zones/db.{{ search_domain }}";
+	allow-update { key rndc-key; };
+};
+
+zone "{{ interface_ipv4_revzone }}" {
+	type master;
+	notify no;
+	file "/etc/named/zones/db.{{ interface_ipv4_revzone }}";
+	allow-update { key rndc-key; };
+};
+
+zone "{{ interface_ipv6_revzone }}" {
+	type master;
+	notify no;
+	file "/etc/named/zones/db.{{ interface_ipv6_revzone }}";
+	allow-update { key rndc-key; };
+};

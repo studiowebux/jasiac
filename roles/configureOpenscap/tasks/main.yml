@@ -1,0 +1,35 @@
+---
+# tasks file for configureOpenscap
+# Because this is a closed system
+# Do not expose these reports to the outside
+- name: Create {{ openscap_expose_directory }} directory to store and expose the reports
+  file:
+    path: "{{ openscap_expose_directory }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when: openscap_expose_directory is defined and openscap_expose_directory != ''
+
+- name: Create monthly job to check the compliancy
+  blockinfile:
+    path: "/etc/cron.monthly/openscap.sh"
+    create: yes
+    mode: 0755
+    owner: root
+    group: root
+    marker: "# {mark}"
+    block: |
+      #!/bin/sh
+      currentDate=$(date +'%Y-%m-%d-%T')
+      host=$(hostname)
+
+      echo "** Started openscap eval on ${host} at ${currentDate}"
+
+      (
+      oscap xccdf eval \
+      --profile xccdf_org.ssgproject.content_profile_standard \
+      --results-arf {{ openscap_expose_directory }}arf_${currentDate}_${host}.xml \
+      --report {{ openscap_expose_directory }}report_${currentDate}_${host}.html \
+      /usr/share/xml/scap/ssg/content/{{ openscap_profile }}
+      ) | /bin/mail -s "openscap Monthly on (${host}) has finished - Report available : /openscap_reports/report_${currentDate}_${host}.html" {{ openscap_email }}

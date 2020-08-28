@@ -1,0 +1,8 @@
+---
+# handlers file for docker
+- name: Start and Enable docker
+  systemd:
+    daemon_reload: yes
+    name: docker
+    state: started
+    enabled: yes

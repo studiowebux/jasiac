@@ -1,0 +1,6 @@
+---
+- name: Add `docker-ce` repository
+  shell: |
+    yum-config-manager \
+    --add-repo \
+    {{ dockerRepoURL }}

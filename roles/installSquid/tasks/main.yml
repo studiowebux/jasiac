@@ -1,0 +1,7 @@
+---
+# tasks file for installSquid
+- include: install.yml
+
+- include: security.yml
+
+- include: configure.yml

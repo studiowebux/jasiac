@@ -1,0 +1,48 @@
+option dhcp6.bootfile-url code 59 = string;
+option dhcp6.vendor-class code 16 = {integer 32, integer 16, string};
+option dhcp6.client-arch-type code 61 = array of unsigned integer 16;
+ 
+authoritative;
+
+ddns-updates on;
+ddns-update-style standard;
+update-static-leases on;
+update-optimization off;
+update-conflict-detection on;
+use-host-decl-names on;
+allow client-updates;
+
+include "/etc/rndc.key";
+
+allow unknown-clients;
+
+default-lease-time 1814400; #21 days
+max-lease-time 1814400; #21 days
+
+log-facility local7;
+ddns-domainname "{{ search_domain }}.";
+ddns-rev-domainname "{{ interface_ipv6_revzone }}";
+
+option domain-name "{{ search_domain }}";
+option domain-search "{{ search_domain }}";
+allow booting;
+allow bootp;
+
+zone {{ search_domain }}. {
+    primary localhost; # This server is the primary DNS server for the zone
+    key rndc-key; # Use the key we defined earlier for dynamic updates
+}
+
+zone {{ interface_ipv6_revzone }} {
+    primary localhost; # This server is the primary DNS server for the zone
+    key rndc-key; # Use the key we defined earlier for dynamic updates
+}
+
+subnet6 {{ interface_ipv6 | ipaddr('network/prefix') }} {
+    range6 {{ interface_ipv6 | ipaddr('51') | ipaddr('address') }} {{ interface_ipv6| ipaddr('-2') | ipaddr('address') }};
+ 
+    option dhcp6.bootfile-url "http://[{{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}]/ipxe/ipv6.efi";
+    option dhcp6.name-servers {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }};
+    option dhcp6.domain-search "{{ search_domain }}";
+    option dhcp6.vendor-class 0 10 "HTTPClient";
+}

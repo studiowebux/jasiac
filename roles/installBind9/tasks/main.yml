@@ -1,0 +1,6 @@
+---
+# tasks file for installBind9
+
+- include: install.yml
+
+- include: security.yml

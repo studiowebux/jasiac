@@ -1,0 +1,8 @@
+---
+# tasks file for ddnsBind9
+# This configuration makes sense only if the DDNS is configured in named/bind9
+- name: Generate DDNS secure key in /etc/rndc.key
+  shell: |
+    rndc-confgen -a && \
+    chown root:named /etc/rndc.key && \
+    chmod 640 /etc/rndc.key

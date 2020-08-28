@@ -1,0 +1,17 @@
+---
+# handlers file for configureNginx
+- name: Reload nginx
+  service:
+    name: nginx
+    state: reloaded
+
+- name: Restart nginx
+  service:
+    name: nginx
+    state: restarted
+
+- name: Start and Enable nginx
+  service:
+    name: nginx
+    state: started
+    enabled: true

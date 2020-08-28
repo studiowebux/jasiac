@@ -1,0 +1,8 @@
+---
+# tasks file for docker
+- include: "directory.yml"
+- include: "dependencies.yml"
+- include: "repository.yml"
+- include: "install.yml"
+- include: "configure.yml"
+- include: "dockerCompose.yml"

@@ -1,0 +1,16 @@
+interface {{ interface_name }}
+{
+        MinRtrAdvInterval 5;
+        MaxRtrAdvInterval 60;
+        AdvSendAdvert on;
+        AdvOtherConfigFlag on;
+        IgnoreIfMissing off;
+ 
+        prefix {{ interface_ipv6 | ipaddr('network/prefix') }} {
+                AdvOnLink on;
+                AdvAutonomous on;
+        };
+ 
+        RDNSS {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }} {
+        };
+};

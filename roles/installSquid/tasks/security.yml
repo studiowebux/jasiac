@@ -1,0 +1,8 @@
+---
+- name: Configure firewall port TCP 3128
+  firewalld:
+    zone: public
+    port: "3128/tcp"
+    permanent: yes
+    immediate: yes
+    state: enabled

@@ -1,0 +1,44 @@
+$TTL    604800
+@       IN      SOA     {{ search_domain }}. admin.{{ search_domain }}. (
+                              1         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         86400 )       ; Negative Cache TTL
+; name servers - NS records
+                                                                                    NS      ns1.{{ search_domain }}.
+
+; PTR Records
+{{ interface_ipv4 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     ns1.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     main.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     www.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     nfs.{{ search_domain }}.
+
+; Hosts
+{{ interface_ipv4 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     eldir.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('5') | ipaddr('address') | ipaddr('revdns') }}    IN     PTR     yggdrasil.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('4') | ipaddr('address') | ipaddr('revdns') }}    IN     PTR     backup.{{ search_domain }}.
+
+; Applications IPv4
+{{ interface_ipv4 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     jenkins.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     box.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     zabbix.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     inventory.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     git.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     registry.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     portainer.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     plantuml.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     npm.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     vault.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     jira.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     confluence.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('32') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     javr-staging.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     sonarqube.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     minio.{{ search_domain }}.
+
+; VM
+{{ interface_ipv4 | ipaddr('1') | ipaddr('address') | ipaddr('revdns') }}    IN     PTR     odin.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('30') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     javr.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('31') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     jenkins-worker.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('32') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     staging.{{ search_domain }}.
+{{ interface_ipv4 | ipaddr('33') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     openvas.{{ search_domain }}.

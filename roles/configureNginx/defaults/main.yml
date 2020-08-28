@@ -1,0 +1,21 @@
+---
+# defaults file for configureNginx
+url: "www.webux.lab"
+search_domain: "webux.lab"
+interface_ipv4: "192.168.10.0/24"
+interface_ipv6: "2001:db8:0:10::/64"
+srv_DATA: "/srv/DATA"
+nginx_expose_directories:
+  - tools
+  - images
+  - tftpboot
+  - ISO
+  - storage
+  - temp
+nginx_iPXE_directories:
+  - path: "{{ srv_DATA }}/pxe/ipxe/"
+    dir: ipxe
+  - path: "{{ srv_DATA }}/pxe/kickstarts/"
+    dir: kickstarts
+  - path: "{{ srv_DATA }}/pxe/scripts/"
+    dir: scripts

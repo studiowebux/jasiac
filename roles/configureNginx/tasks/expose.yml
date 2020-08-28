@@ -1,0 +1,14 @@
+---
+- name: Expose Directories
+  file:
+    src: "/{{ item }}"
+    dest: "/usr/share/nginx/html/{{ item }}"
+    state: link
+  with_items: "{{ nginx_expose_directories }}"
+
+- name: Expose Netboot/iPXE Directories
+  file:
+    src: "/{{ item.path }}"
+    dest: "/usr/share/nginx/html/{{ item.dir }}"
+    state: link
+  with_items: "{{ nginx_iPXE_directories }}"

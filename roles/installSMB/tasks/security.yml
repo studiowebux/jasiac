@@ -1,0 +1,7 @@
+---
+- firewalld:
+    zone: public
+    service: samba
+    permanent: yes
+    immediate: yes
+    state: enabled

@@ -1,0 +1,7 @@
+---
+# tasks file for configureDhcpd
+- include: ipv4.yml
+  when: interface_ipv4 is defined and interface_ipv4 != ''
+
+- include: ipv6.yml
+  when: interface_ipv6 is defined and interface_ipv6 != ''

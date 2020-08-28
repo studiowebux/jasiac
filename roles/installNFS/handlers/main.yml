@@ -1,0 +1,7 @@
+---
+# handlers file for installNFS
+- name: Start and Enable nfs
+  service:
+    name: nfs
+    state: started
+    enabled: yes

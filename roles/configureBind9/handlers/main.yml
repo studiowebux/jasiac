@@ -1,0 +1,7 @@
+---
+# handlers file for configureBind9
+- name: Start and Enable named
+  service:
+    name: named
+    state: started
+    enabled: yes

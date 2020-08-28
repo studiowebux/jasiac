@@ -1,0 +1,7 @@
+---
+# handlers file for installSMB
+- name: Start and Enable smb
+  service:
+    name: smb
+    state: started
+    enabled: yes

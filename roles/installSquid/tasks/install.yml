@@ -1,0 +1,5 @@
+---
+- name: Install Squid
+  package:
+    name: squid
+    state: latest

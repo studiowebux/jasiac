@@ -1,10 +1,20 @@
 ---
 # tasks file for deployVM
-- include: "directory.yml"
-- include: "iso.yml"
-- include: "extract.yml"
-  when: "'.gz' in iso_url"
-- include: "kickstart.yml"
-  when: kickstart_name|length > 0
-- include: "create.yml"
-- include: "launch.yml"
+- name: Check if the VM ({{ vm_name }}) already exists
+  shell: "virsh list --all | grep {{ vm_name }}"
+  register: vm_exists
+  ignore_errors: yes
+
+- debug:
+    msg: "{{ vm_exists }}"
+
+- block:
+    - include: "directory.yml"
+    - include: "iso.yml"
+    - include: "extract.yml"
+      when: "'.gz' in iso_url"
+    - include: "kickstart.yml"
+      when: kickstart_name|length > 0
+    - include: "create.yml"
+    - include: "launch.yml"
+  when: vm_exists.rc != 0

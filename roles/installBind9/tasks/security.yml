@@ -1,0 +1,7 @@
+---
+- firewalld:
+    zone: public
+    service: dns
+    permanent: yes
+    immediate: yes
+    state: enabled

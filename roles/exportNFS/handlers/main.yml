@@ -1,0 +1,12 @@
+---
+# handlers file for exportNFS
+- name: Restart nfs
+  service:
+    name: nfs
+    state: restarted
+
+- name: Start and Enable nfs
+  service:
+    name: nfs
+    state: started
+    enabled: yes

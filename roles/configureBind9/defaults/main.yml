@@ -1,0 +1,7 @@
+---
+# defaults file for configureBind9
+interface_ipv4: "192.168.10.0/24"
+interface_ipv6: "2001:db8:0:10::/64"
+search_domain: "local.lab"
+interface_ipv4_revzone: "10.168.192.in-addr.arpa"
+interface_ipv6_revzone: "0.1.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa."

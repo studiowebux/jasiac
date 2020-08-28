@@ -1,0 +1,10 @@
+---
+- name: Configure the shares
+  template:
+    src: smb.conf.j2
+    dest: /etc/samba/smb.conf
+    owner: root
+    group: root
+    mode: "0644"
+    backup: yes
+  notify: Start and Enable smb

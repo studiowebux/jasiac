@@ -1,0 +1,15 @@
+---
+# handlers file for installDhcpd
+- name: Start and Enable dhcpd
+  service:
+    name: dhcpd
+    state: started
+    enabled: yes
+  when: interface_ipv4 is defined and interface_ipv4 != ''
+
+- name: Start and Enable dhcpd6
+  service:
+    name: dhcpd6
+    state: started
+    enabled: yes
+  when: interface_ipv6 is defined and interface_ipv6 != ''

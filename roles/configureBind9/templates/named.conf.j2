@@ -1,0 +1,42 @@
+options {
+	listen-on port 53 { 127.0.0.1; {{ interface_ipv4 | ipaddr('10') | ipaddr('address') }}; };
+	listen-on-v6 port 53 { ::1; {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}; };
+	directory 	"/var/named";
+	dump-file 	"/var/named/data/cache_dump.db";
+	statistics-file "/var/named/data/named_stats.txt";
+	memstatistics-file "/var/named/data/named_mem_stats.txt";
+	recursing-file  "/var/named/data/named.recursing";
+	secroots-file   "/var/named/data/named.secroots";
+
+	allow-query     { any; };
+	allow-recursion { localnets; };
+	allow-transfer { localnets; };
+	
+	forwarders { {{ interface_ipv4 | ipaddr('1') | ipaddr('address') }}; 1.1.1.1; 8.8.8.8; };
+
+	dnssec-enable no;
+	dnssec-validation no;
+
+	bindkeys-file "/etc/named.root.key";
+
+	managed-keys-directory "/var/named/dynamic";
+
+	pid-file "/run/named/named.pid";
+	session-keyfile "/run/named/session.key";
+};
+
+logging {
+        channel default_debug {
+                file "data/named.run";
+                severity dynamic;
+        };
+};
+
+zone "." IN {
+	type hint;
+	file "named.ca";
+};
+
+include "/etc/named.rfc1912.zones";
+include "/etc/named.root.key";
+include "/etc/named/named.conf.local";

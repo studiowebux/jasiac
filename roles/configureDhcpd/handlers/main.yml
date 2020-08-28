@@ -1,0 +1,16 @@
+---
+# handlers file for configureDhcpd
+- name: Restart dhcpd
+  service:
+    name: dhcpd
+    state: restarted
+
+- name: Restart dhcpd6
+  service:
+    name: dhcpd
+    state: restarted
+
+- name: Restart radvd
+  service:
+    name: radvd
+    state: restarted

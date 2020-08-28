@@ -11,6 +11,8 @@ ram: ""
 vcpus: ""
 os_variant: "generic"
 graphics: "vnc"
-networks: []
-disks: []
+networks:
+  - ""
+disks:
+  - ""
 autostart: "yes"

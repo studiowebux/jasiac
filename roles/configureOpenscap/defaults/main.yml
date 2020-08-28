@@ -1,0 +1,5 @@
+---
+# defaults file for configureOpenscap
+openscap_email: "changeme@local.lab"
+openscap_profile: "ssg-centos7-ds.xml"
+openscap_expose_directory: "/usr/share/nginx/html/openscap_reports/"

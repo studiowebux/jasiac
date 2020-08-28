@@ -1,0 +1,5 @@
+---
+# tasks file for configureNginx
+- include: security.yml
+- include: configure.yml
+- include: expose.yml

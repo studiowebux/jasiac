@@ -1,0 +1,4 @@
+---
+# defaults file for installSquid
+interface_ipv4: "192.168.10.0/24"
+interface_ipv6: "2001:db8:0:10::/64"

@@ -1,0 +1,5 @@
+---
+- name: Install NFS Server
+  package:
+    name: "nfs-utils"
+    state: latest

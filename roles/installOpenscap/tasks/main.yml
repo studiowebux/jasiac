@@ -1,0 +1,22 @@
+---
+# tasks file for installOpenscap
+- name: Install openscap-scanner and rule sets
+  package:
+    name:
+      - openscap-scanner
+      - scap-security-guide
+    state: latest
+
+- name: List installed profiles
+  shell: "ls -al /usr/share/xml/scap/ssg/content/"
+  register: profiles
+
+- debug:
+    msg: "{{ profiles.stdout_lines }}"
+
+- name: Get profile info
+  shell: oscap info /usr/share/xml/scap/ssg/content/{{ openscap_profile }}
+  register: profileInfo
+
+- debug:
+    msg: "{{ profileInfo.stdout_lines }}"

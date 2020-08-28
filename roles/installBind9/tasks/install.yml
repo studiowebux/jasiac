@@ -1,0 +1,7 @@
+---
+- name: Install bind with utilities
+  package:
+    name:
+      - bind-utils
+      - bind
+    state: latest

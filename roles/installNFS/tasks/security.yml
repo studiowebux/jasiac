@@ -1,0 +1,21 @@
+---
+- firewalld:
+    zone: public
+    service: nfs
+    permanent: yes
+    immediate: yes
+    state: enabled
+
+- firewalld:
+    zone: public
+    service: mountd
+    permanent: yes
+    immediate: yes
+    state: enabled
+
+- firewalld:
+    zone: public
+    service: rpc-bind
+    permanent: yes
+    immediate: yes
+    state: enabled

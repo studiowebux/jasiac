@@ -1,0 +1,8 @@
+---
+# defaults file for configureDhcpd
+interface_ipv4: ""
+interface_ipv6: ""
+nterface_ipv4_revzone: "10.168.192.in-addr.arpa"
+nterface_ipv6_revzone: "0.1.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa."
+search_domain: "local.lab"
+nterface_name: "br0.10"

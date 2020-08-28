@@ -78,7 +78,7 @@ git \
 nano
 
 # Download Root Certificate and install it
-wget http://www.webux.lab/tools/certificates/studiowebux_CA.pem -O /etc/pki/ca-trust/source/anchors/studiowebux_CA.pem && update-ca-trust
+wget http://www.webux.lab/tools/certificates/local_CA.pem -O /etc/pki/ca-trust/source/anchors/local_CA.pem && update-ca-trust
 
 # Install Jenkins
 # Port 8080

@@ -1,0 +1,7 @@
+---
+# handlers file for installSquid
+- name: Start and Enable squid
+  systemd:
+    name: squid
+    state: started
+    enabled: yes

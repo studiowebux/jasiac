@@ -1,0 +1,9 @@
+---
+# tasks file for installRootCertificate
+- name: Install Root Certificate
+  get_url:
+    url: "http://www.{{ search_domain }}{{ certificate_expose_directory }}{{ ca_certificate_name }}.pem"
+    dest: "/etc/pki/ca-trust/source/anchors/{{ ca_certificate_name }}.pem"
+
+- name: Update Certificates
+  shell: update-ca-trust

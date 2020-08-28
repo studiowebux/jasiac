@@ -83,8 +83,8 @@ net-tools
 
 # Download Root Certificate and install it
 mkdir /usr/share/ca-certificates/studiowebux
-wget http://www.webux.lab/tools/certificates/studiowebux_CA.pem -O /usr/share/ca-certificates/studiowebux/studiowebux_CA.pem
-openssl x509 -in /usr/share/ca-certificates/studiowebux/studiowebux_CA.pem -inform PEM -out /usr/share/ca-certificates/studiowebux/studiowebux_CA.crt
+wget http://www.webux.lab/tools/certificates/local_CA.pem -O /usr/share/ca-certificates/studiowebux/local_CA.pem
+openssl x509 -in /usr/share/ca-certificates/studiowebux/local_CA.pem -inform PEM -out /usr/share/ca-certificates/studiowebux/local_CA.crt
 update-ca-certificates
 
 # Clone Deepspeech

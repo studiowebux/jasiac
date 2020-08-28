@@ -1,0 +1,17 @@
+---
+# tasks file for installDhcpd
+- name: Install DHCP
+  package:
+    name: dhcp
+    state: latest
+  notify:
+    - Start and Enable dhcpd
+    - Start and Enable dhcpd6
+  when: interface_ipv4 != '' or interface_ipv6 != ''
+
+- name: Install radvd
+  package:
+    name: radvd
+    state: latest
+  notify: Start and Enable radvd
+  when: interface_ipv6 != ''

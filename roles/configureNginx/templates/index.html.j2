@@ -1,0 +1,111 @@
+<html>
+  <head>
+    <title>Toolbox Server</title>
+  </head>
+  <body>
+    <h2>Webux Lab</h2>
+    <h3>Internal Resources</h3>
+    <ul>
+      <li><a href="/tools" target="_blank">Tools</a></li>
+      <li><a href="/storage" target="_blank">Storage</a></li>
+      <li><a href="/ISO" target="_blank">ISO</a></li>
+    </ul>
+
+    <hr />
+
+    <h3>Applications</h3>
+    <ul>
+      <li>
+        <a href="http://box.{{ search_domain }}" target="_blank">Nextcloud</a>
+      </li>
+      <li>
+        <a href="http://jenkins.{{ search_domain }}" target="_blank">Jenkins</a>
+      </li>
+      <li>
+        <a href="http://zabbix.{{ search_domain }}" target="_blank">Zabbix</a>
+      </li>
+      <li>
+        <a href="http://git.{{ search_domain }}" target="_blank">Gitlab</a>
+      </li>
+      <li>
+        <a
+          href="http://registry.{{ search_domain }}/v2/_catalog"
+          target="_blank"
+          >Registry</a
+        >
+      </li>
+      <li>
+        <a href="http://npm.{{ search_domain }}" target="_blank">Verdaccio</a>
+      </li>
+      <li>
+        <a href="http://plantuml.{{ search_domain }}" target="_blank"
+          >PlantUML</a
+        >
+      </li>
+      <li>
+        <a href="http://portainer.{{ search_domain }}" target="_blank"
+          >Portainer</a
+        >
+      </li>
+      <li>
+        <a href="http://vault.{{ search_domain }}" target="_blank"
+          >Vault</a
+        >
+      </li>
+      <li>
+        <a href="http://jenkins-worker.{{ search_domain }}:8080" target="_blank"
+          >Jenkins-worker</a
+        >
+      </li>
+      <li>
+        <a href="https://sonarqube.{{ search_domain }}" target="_blank"
+          >sonarqube</a
+        >
+      </li>
+      <li>
+        <a href="https://minio.{{ search_domain }}" target="_blank"
+          >Minio</a
+        >
+      </li>
+    </ul>
+
+    <hr />
+
+    <h3>Reports</h3>
+    <ul>
+      <li><a href="/openscap_reports/" target="_blank">OpenScap</a></li>
+    </ul>
+
+    <hr />
+    
+    <h3>Virtual Machines</h3>
+    <ul>
+      <li>
+        Staging :
+        {{ interface_ipv4 | ipaddr('32') | ipaddr('address') }} (staging.{{
+          search_domain
+        }})
+      </li>
+      <li>
+        OpenVAS :
+        {{ interface_ipv4 | ipaddr('33') | ipaddr('address') }} (openvas.{{
+          search_domain
+        }})
+      </li>
+      <li>
+        Jenkins Worker :
+        {{ interface_ipv4 | ipaddr('31') | ipaddr('address') }} (jenkins-worker.{{
+          search_domain
+        }})
+      </li>
+      <li>
+        ODIN :
+        {{ interface_ipv4 | ipaddr('1') | ipaddr('address') }} (odin.{{
+          search_domain
+        }})
+      </li>
+    </ul>
+
+    <hr />
+  </body>
+</html>

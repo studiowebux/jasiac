@@ -12,18 +12,18 @@ Generate _client_ or _server_ or _ssl_ certificate
 | ---------------------------- | ----------------------------- |
 | type                         | "server" \| "client" \| "ssl" |
 | cert_name                    | ""                            |
-| ca_certificate_name          | "changeme_CA"                 |
+| ca_certificate_name          | "local_CA"                    |
 | certificate_directory        | "/srv/DATA/certificates/"     |
 | ca_certificate_passphrase    | ""                            |
 | domain_name                  | "local.lab"                   |
 | cert_days                    | 730                           |
 | cert_bits                    | 4096                          |
 | cert_encryption              | "-sha256"                     |
-| cert_country                 | "Changeme"                    |
-| cert_state                   | "Changeme"                    |
+| cert_country                 | "changeme"                    |
+| cert_state                   | "changeme"                    |
 | cert_locality                | "Changeme"                    |
-| cert_organization            | "Changeme"                    |
-| cert_organization_unit       | "Changeme"                    |
+| cert_organization            | "changeme"                    |
+| cert_organization_unit       | "Lab"                         |
 | cert_email_address           | "changeme@local.lab"          |
 | certificate_expose_directory | "/tools/certificates/"        |
 | alt_name                     | ""                            |
@@ -48,22 +48,22 @@ None
 
   vars:
     type: "server" # server | client | ssl
-    cert_name: "fw"
-    ca_certificate_name: "changeme_CA"
+    cert_name: "Example"
+    ca_certificate_name: "local_CA"
     certificate_directory: "/srv/DATA/certificates/"
     ca_certificate_passphrase: ""
     domain_name: "local.lab"
     cert_days: 730
     cert_bits: 4096
     cert_encryption: "-sha256"
-    cert_country: "Changeme"
-    cert_state: "Changeme"
-    cert_locality: "Changeme"
-    cert_organization: "Changeme"
-    cert_organization_unit: "Changeme"
+    cert_country: "changeme"
+    cert_state: "changeme"
+    cert_locality: "changeme"
+    cert_organization: "changeme"
+    cert_organization_unit: "changeme"
     cert_email_address: "changeme@local.lab"
     certificate_expose_directory: "/tools/certificates/"
-    alt_name: "fw.local.lab"
+    alt_name: "example.local.lab"
 
   roles:
     - { role: roles/generateCertificate }

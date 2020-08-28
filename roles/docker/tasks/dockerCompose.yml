@@ -1,0 +1,14 @@
+---
+- name: Install `docker-compose`
+  shell: 'curl -L "{{ composeURL }}" -o /usr/local/bin/docker-compose'
+
+- name: Set `docker-compose` Permission
+  file:
+    path: "/usr/local/bin/docker-compose"
+    mode: "0755"
+
+- name: Create link to /usr/bin/docker-compose
+  file:
+    src: "/usr/local/bin/docker-compose"
+    dest: "/usr/bin/docker-compose"
+    state: link

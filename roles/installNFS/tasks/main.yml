@@ -1,0 +1,9 @@
+---
+# tasks file for installNFS
+
+- include: install.yml
+
+- include: security.yml
+
+- include_role:
+    name: exportNFS

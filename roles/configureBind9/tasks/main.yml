@@ -1,0 +1,56 @@
+---
+# tasks file for configureBind9
+- name: Create the `named.conf` file
+  template:
+    src: named.conf.j2
+    dest: /etc/named.conf
+    owner: root
+    group: root
+    mode: "0644"
+    backup: yes
+
+- name: Create the `named.conf.local` file
+  template:
+    src: named.conf.local.j2
+    dest: /etc/named/named.conf.local
+    owner: root
+    group: root
+    mode: "0644"
+    backup: yes
+
+- name: Create `zones` directory
+  file:
+    path: /etc/named/zones
+    state: directory
+    owner: root
+    group: named
+    mode: "0774"
+
+- name: Create the `db.{{ interface_ipv4_revzone }}` file
+  template:
+    src: db.ipv4.j2
+    dest: "/etc/named/zones/db.{{ interface_ipv4_revzone }}"
+    owner: root
+    group: root
+    mode: "0644"
+    backup: yes
+
+- name: Create the `db.{{ interface_ipv6_revzone }}` file
+  template:
+    src: db.ipv6.j2
+    dest: "/etc/named/zones/db.{{ interface_ipv6_revzone }}"
+    owner: root
+    group: root
+    mode: "0644"
+    backup: yes
+
+- name: Create the `db.{{ search_domain }}` file
+  template:
+    src: db.domain.j2
+    dest: "/etc/named/zones/db.{{ search_domain }}"
+    owner: root
+    group: root
+    mode: "0644"
+    backup: yes
+
+- include: check.yml

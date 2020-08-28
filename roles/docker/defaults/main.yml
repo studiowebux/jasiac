@@ -1,0 +1,6 @@
+---
+# defaults file for docker
+srv_DOCKER: "/srv/DOCKER"
+docker_network: "--default-address-pool base=172.24.0.0/13,size=24"
+composeURL: "https://github.com/docker/compose/releases/download/1.26.0/docker-compose-$(uname -s)-$(uname -m)"
+dockerRepoURL: "https://download.docker.com/linux/centos/docker-ce.repo"

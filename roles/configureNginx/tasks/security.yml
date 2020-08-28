@@ -1,0 +1,8 @@
+---
+- name: Configure SELinux
+  shell: |
+    semanage fcontext -a -t httpd_config_t '{{ srv_DATA }}/certificates/.*.crt'
+    semanage fcontext -a -t httpd_config_t '{{ srv_DATA }}/certificates/.*.key'
+    restorecon -Rv {{ srv_DATA }}/certificates/
+  notify:
+    - Restart nginx

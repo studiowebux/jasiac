@@ -1,0 +1,11 @@
+---
+- name: Install or Upgrade epel-release
+  package:
+    name: epel-release
+    state: latest
+
+- name: Install or Upgrade nginx
+  package:
+    name: nginx
+    state: latest
+  notify: Start and Enable nginx

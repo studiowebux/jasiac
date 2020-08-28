@@ -1,0 +1,33 @@
+---
+- name: Create Default Nginx configuration
+  template:
+    src: default.conf.j2
+    dest: /etc/nginx/conf.d/default.conf
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Create Nginx configuration
+  copy:
+    src: nginx.conf
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Restart nginx
+
+- name: Create default index.html
+  template:
+    src: index.html.j2
+    dest: /usr/share/nginx/html/index.html
+    owner: root
+    group: root
+    mode: "0755"
+    backup: yes
+
+# - name: Start and Enable nginx
+#   service:
+#     name: nginx
+#     enabled: yes
+#     state: started

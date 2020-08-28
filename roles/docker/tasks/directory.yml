@@ -1,0 +1,5 @@
+---
+- name: Create `{{ srv_DOCKER }}/data` directory
+  file:
+    path: "{{ srv_DOCKER }}/data"
+    state: directory
