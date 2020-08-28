@@ -178,7 +178,7 @@ ca_encryption: "-sha256"
 ca_country: "CHANGEME"
 ca_state: "Changeme"
 ca_locality: "Changeme"
-ca_organization: "Changeme
+ca_organization: "Changeme"
 ca_organization_unit: "Changeme"
 ca_common_name: "changeme.local.lab"
 ca_email_address: "changeme@local.lab"
@@ -247,7 +247,7 @@ client:
     vcpus: 2
     os_variant: "generic"
     autostart: "no"
-    networks: 
+    networks:
       - "network=INTERNAL_TRUNK,model=virtio"
       - "network=WAN,model=virtio" # Insecure, but it allows to configure everything, and set a backdoor in case the network configuration is bad.
 
@@ -257,3 +257,131 @@ physical_lan_ip: "192.168.120.10/24"
 physical_lan_bridge_name: "vlan-br0.120"
 physical_lan_dns: "192.168.120.1"
 physical_wan_bridge_name: "br2"
+
+# Bind9
+interface_ipv4: "192.168.110.0/24"
+interface_ipv6: "2001:db8:0:110::/64"
+# search_domain: "local.lab"
+interface_ipv4_revzone: "110.168.192.in-addr.arpa"
+interface_ipv6_revzone: "0.1.1.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa."
+
+# DHCPd
+# interface_ipv4: ""
+# interface_ipv6: ""
+#interface_ipv4_revzone: ""
+#interface_ipv6_revzone: ""
+#search_domain: "local.lab"
+interface_name: "br0.110"
+
+# Nginx
+url: "www.local.lab"
+# search_domain: "udemy.lab"
+# interface_ipv4: "192.168.110.0/24"
+# interface_ipv6: "2001:db8:0:110::/64"
+# srv_DATA: "/srv/DATA"
+nginx_expose_directories:
+  - tools
+  - images
+  - tftpboot
+  - ISO
+  - storage
+  - temp
+nginx_iPXE_directories:
+  - path: "{{ srv_DATA }}/pxe/ipxe/"
+    dir: ipxe
+  - path: "{{ srv_DATA }}/pxe/kickstarts/"
+    dir: kickstarts
+  - path: "{{ srv_DATA }}/pxe/scripts/"
+    dir: scripts
+nginx:
+  type: "server" # server | client | ssl
+  cert_name: "www"
+  ca_certificate_name: "local_CA"
+  certificate_directory: "/srv/DATA/certificates/"
+  ca_certificate_passphrase: ""
+  domain_name: "local.lab"
+  cert_days: 730
+  cert_bits: 4096
+  cert_encryption: "-sha256"
+  cert_country: "changeme"
+  cert_state: "changeme"
+  cert_locality: "changeme"
+  cert_organization: "changeme"
+  cert_organization_unit: "changeme"
+  cert_email_address: "changeme@local.lab"
+  certificate_expose_directory: "/tools/certificates/"
+  web_server_path: "/etc/nginx/ssl/"
+
+# Install CA Certificate
+# certificate_expose_directory: "/tools/certificates/"
+# ca_certificate_name: "changeme_CA"
+# search_domain: "local.lab"
+
+# OpenSCAP
+openscap_profile: "ssg-centos7-ds.xml"
+openscap_email: "changeme@local.lab"
+openscap_expose_directory: "/usr/share/nginx/html/openscap_reports/"
+
+# VM
+vms:
+  # Kali Linux
+  - iso_url: "https://cdimage.kali.org/kali-2020.2/kali-linux-2020.2-installer-amd64.iso"
+    iso_filename: "kali-linux-2020.2-installer-amd64.iso"
+    iso_destination: "/ISO/kali/"
+    volume: "/srv/DATA/virtual_machines/Kali/"
+    vm_name: "Kali"
+    ram: 8096
+    vcpus: 4
+    autostart: "no"
+    networks:
+      - "network=WAN,model=virtio"
+    disks:
+      - "path=/srv/DATA/virtual_machines/Kali/disk_01.qcow2,size=200,bus=virtio,format=qcow2"
+  # Jenkins
+  - iso_url: "http://mirror2.evolution-host.com/centos/7.8.2003/isos/x86_64/CentOS-7-x86_64-Minimal-2003.iso"
+    iso_filename: "CentOS-7-x86_64-Minimal-2003.iso"
+    iso_destination: "/ISO/centos/7.8.2003/"
+    volume: "/srv/DATA/virtual_machines/Jenkins/"
+    kickstarts_dir: "/srv/DATA/pxe/kickstarts"
+    kickstart_name: "jenkins.ks"
+    vm_name: "Jenkins"
+    ram: 4096
+    vcpus: 4
+    networks:
+      - "network=INTERNAL_TRUNK,model=virtio"
+    disks:
+      - "path=/srv/DATA/virtual_machines/Jenkins/disk_01.qcow2,size=20,bus=virtio,format=qcow2"
+      - "path=/srv/DATA/virtual_machines/Jenkins/disk_02.qcow2,size=80,bus=virtio,format=qcow2"
+  # Staging
+  - iso_url: "http://mirror2.evolution-host.com/centos/7.8.2003/isos/x86_64/CentOS-7-x86_64-Minimal-2003.iso"
+    iso_filename: "CentOS-7-x86_64-Minimal-2003.iso"
+    iso_destination: "/ISO/centos/7.8.2003/"
+    volume: "/srv/DATA/virtual_machines/Staging/"
+    kickstarts_dir: "/srv/DATA/pxe/kickstarts"
+    kickstart_name: "staging.ks"
+    vm_name: "Staging"
+    ram: 4096
+    vcpus: 4
+    networks:
+      - "network=INTERNAL_TRUNK,model=virtio"
+    disks:
+      - "path=/srv/DATA/virtual_machines/Staging/disk_01.qcow2,size=20,bus=virtio,format=qcow2"
+      - "path=/srv/DATA/virtual_machines/Staging/disk_02.qcow2,size=80,bus=virtio,format=qcow2"
+  # OpenVAS
+  - iso_url: "https://files.greenbone.net/download/VM/gsm-ce-6.0.10.iso"
+    iso_filename: "gsm-ce-6.0.10.iso"
+    iso_destination: "/ISO/openvas/"
+    volume: "/srv/DATA/virtual_machines/OpenVAS/"
+    vm_name: "OpenVAS"
+    ram: 4096
+    vcpus: 4
+    networks:
+      - "network=WAN,model=virtio"
+    disks:
+      - "path=/srv/DATA/virtual_machines/OpenVAS/disk_01.qcow2,size=80,bus=sata,format=qcow2"
+
+# Docker
+# srv_DOCKER: "/srv/DOCKER"
+docker_network: "--default-address-pool base=172.24.0.0/13,size=24"
+composeURL: "https://github.com/docker/compose/releases/download/1.26.0/docker-compose-$(uname -s)-$(uname -m)"
+dockerRepoURL: "https://download.docker.com/linux/centos/docker-ce.repo"

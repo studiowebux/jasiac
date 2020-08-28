@@ -1,0 +1,13 @@
+# Source: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/security_guide/sec-creating_audit_reports
+
+- name: Generate the audit report
+  hosts: all
+  gather_facts: no
+
+  tasks:
+    - name: Generate report
+      shell: aureport
+      register: report
+
+    - debug:
+        msg: "{{ report.stdout_lines }}"

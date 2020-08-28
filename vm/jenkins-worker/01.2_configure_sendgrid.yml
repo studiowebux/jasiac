@@ -1,0 +1,36 @@
+- name: Install and Configure mail with sendgrid
+  hosts: jenkins-worker
+  gather_facts: no
+
+  vars:
+    url_port: "smtp.sendgrid.net:587"
+    user: "apikey"
+    test_recipient: "tommy@studiowebux.com"
+
+  vars_prompt:
+    - name: "sendgrid_password"
+      prompt: "Sendgrid API Password"
+      private: yes
+
+  tasks:
+    - name: Remove sendmail
+      package:
+        name: sendmail
+        state: absent
+
+    - name: Install mailx
+      package:
+        name: mailx
+        state: latest
+
+    - name: Configure `mail`
+      blockinfile:
+        path: "/etc/mail.rc"
+        block: |
+          set smtp=smtp://{{ url_port }}
+          set smtp-auth=login
+          set smtp-auth-user={{ user }}
+          set smtp-auth-password={{ sendgrid_password }}
+
+    - name: Test the configuration
+      shell: "echo 'Test the Sendgrid Configuration' | mail -s 'Welcome !' {{ test_recipient }}"

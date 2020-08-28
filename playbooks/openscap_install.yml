@@ -1,0 +1,7 @@
+---
+- name: Install and configure openscap
+  hosts: physical
+  become: yes
+  roles:
+    - { role: roles/installOpenscap }
+    - { role: roles/configureOpenscap }

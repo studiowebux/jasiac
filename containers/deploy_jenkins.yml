@@ -1,0 +1,130 @@
+- name: Deploy Jenkins with Docker
+  hosts: physical
+  gather_facts: no
+
+  vars:
+    srv_DOCKER: "/srv/DOCKER"
+    search_domain: "local.lab"
+    ca_certificate_name: "local_CA"
+
+  tasks:
+    - name: Install dependencies
+      package:
+        name:
+          - python-pip
+        state: present
+
+    - name: Install Python Docker
+      shell: "pip install docker"
+
+    - name: Create Jenkins Directory
+      file:
+        path: "{{ srv_DOCKER }}/volumes/jenkins"
+        state: directory
+
+    - name: Change Jenkins Permissions
+      file:
+        path: "{{ srv_DOCKER }}/volumes/jenkins"
+        owner: 1000
+        group: 1000
+
+    - name: Copy CA certificate
+      copy:
+        src: "/tools/certificates/{{ ca_certificate_name }}.pem"
+        dest: "{{ srv_DOCKER }}/volumes/jenkins/{{ ca_certificate_name }}.pem"
+        remote_src: yes
+
+    - name: Create custom Jenkins Dockerfile
+      blockinfile:
+        create: yes
+        path: "{{ srv_DOCKER }}/volumes/jenkins/Dockerfile"
+        block: |
+          FROM jenkins/jenkins:lts
+
+          USER root
+          RUN apt-get update && apt-get install -y sudo
+
+          # Install CA Certificate
+          COPY ./{{ ca_certificate_name }}.pem .
+
+          RUN mkdir /usr/share/ca-certificates/studiowebux && \
+          mv ./{{ ca_certificate_name }}.pem /usr/share/ca-certificates/studiowebux/{{ ca_certificate_name }}.pem && \
+          openssl x509 -in /usr/share/ca-certificates/studiowebux/{{ ca_certificate_name }}.pem -inform PEM -out /usr/share/ca-certificates/studiowebux/{{ ca_certificate_name }}.crt && \
+          echo "studiowebux/{{ ca_certificate_name }}.crt" >> /etc/ca-certificates.conf && \
+          update-ca-certificates
+
+          USER jenkins
+
+    - name: Build Custom jenkins
+      shell: "docker build ./ -t jenkins-custom"
+      args:
+        chdir: "{{ srv_DOCKER }}/volumes/jenkins"
+
+    - name: Deploy jenkins with Docker
+      docker_container:
+        name: Jenkins
+        image: jenkins-custom:latest
+        state: started
+        recreate: true
+        restart_policy: always
+        volumes:
+          - "{{ srv_DOCKER }}/volumes/jenkins:/var/jenkins_home"
+        ports:
+          - "8080:8080"
+          - "50000:50000"
+
+    - firewalld:
+        zone: public
+        port: 8080/tcp
+        permanent: yes
+        immediate: yes
+        state: enabled
+
+    - firewalld:
+        zone: public
+        port: 50000/tcp
+        permanent: yes
+        immediate: yes
+        state: enabled
+
+    - name: Allow Nginx to listen on tcp port 8080
+      seport:
+        ports: 8080
+        proto: tcp
+        setype: http_port_t
+        state: present
+
+    - name: Print administrator Password
+      shell: "docker exec -it Jenkins cat /var/jenkins_home/secrets/initialAdminPassword"
+      register: default_password
+      ignore_errors: true
+
+    - debug:
+        msg: "{{ default_password.stdout }}"
+
+    - name: Create log directory
+      file:
+        path: /var/log/nginx/jenkins
+        state: directory
+
+    - set_fact:
+        cert_name: "jenkins"
+        ca_certificate_name: "local_CA"
+        alt_name: "jenkins.local.lab"
+
+    - name: generate SSL (jenkins.crt & jenkins.key)
+      import_tasks: ../tasks/generate_ssl.yml
+
+    - name: Attach Proxy
+      template:
+        src: "./reverse_proxy/jenkins.conf.j2"
+        dest: "/etc/nginx/conf.d/jenkins.conf"
+        owner: root
+        group: root
+        mode: "0644"
+        backup: yes
+
+    - name: Reload nginx to apply changes
+      systemd:
+        name: nginx
+        state: reloaded

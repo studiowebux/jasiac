@@ -194,25 +194,30 @@ On MacOS:
 ssh -L 127.0.0.1:5901:127.0.0.1:5901 -N [USER]@[HOST]
 ```
 
-### Reconfigure the network to use the PFSense instance to filter network traffics (Not Yet Published)
+### Reconfigure the network to use the PFSense instance to filter network traffics
 
 > Be sure that your PFSense instance is running and is working as expected.
+>  Otherwise, it is possible that you lost the remote access to the machine.
 
 ```bash
 ansible-playbook -i inventory/ playbooks/network_edit.yml --user tgingras --ask-become
 ```
 
-## Install and configure Bind9 (Not Yet Published)
+## Install and configure Bind9
 
+In case you have issues with `yum` and `IPv6`
+
+```bash
 echo "ip_resolve=4" >> /etc/yum.conf
+```
 
-Will be converted to docker container in the future : https://hub.docker.com/r/ventz/bind/
+> Will be converted to docker container in the future : https://hub.docker.com/r/ventz/bind/
 
 ```bash
 ansible-playbook -i inventory/ playbooks/bind9_install.yml --user tgingras --ask-become
 ```
 
-## Install and configure **DHCP Server** (Not Yet Published)
+## Install and configure **DHCP Server**
 
 Will be converted to docker container in the future : https://github.com/networkboot/docker-dhcpd
 
@@ -220,52 +225,83 @@ Will be converted to docker container in the future : https://github.com/network
 ansible-playbook -i inventory/ playbooks/dhcpd_install.yml --user tgingras --ask-become
 ```
 
-## Install and configure **Nginx** (Not Yet Published)
+> The IPv6 implementation is available but not tested thoroughly.
+
+## Install and configure **Nginx**
 
 ```bash
 ansible-playbook -i inventory/ playbooks/nginx_install.yml --user tgingras --ask-become
 ```
 
-## Install the **CA root certificate** on clients (Not Yet Published)
+## Install the **CA root certificate** on clients
 
 ```bash
 ansible-playbook -i inventory/ playbooks/certificate_authority_install.yml --user tgingras --ask-become
 ```
 
-## Install and configure **NFS Server** (Not Yet Published)
+## Install and configure **NFS Server**
 
 ```bash
 ansible-playbook -i inventory/ playbooks/nfs_install.yml --user tgingras --ask-become
 ```
 
-## Install and configure **SMB Server** (Not Yet Published)
+## Install and configure **SMB Server**
 
 ```bash
 ansible-playbook -i inventory/ playbooks/smb_install.yml --user tgingras --ask-become
 ```
 
-## Install and configure **Squid** (Not Yet Published)
+## Install and configure **Squid**
 
 ```bash
 ansible-playbook -i inventory/ playbooks/squid_install.yml --user tgingras --ask-become
 ```
 
-## Install and configure **OpenSCAP** (Not Yet Published)
+## Install and configure **OpenSCAP**
 
 ```bash
 ansible-playbook -i inventory/ playbooks/openscap_install.yml --user tgingras --ask-become
 ```
 
-## Deploy **all VMs** (Not Yet Published)
+## Deploy **all VMs**
 
 ```bash
 ansible-playbook -i inventory/ playbooks/deploy_all_vms.yml --user tgingras --ask-become
 ```
 
-## Configure each **VMs** (Not Yet Published)
+## Configure each **VMs**
 
 Mostly manual for now, there is yml available in the `vm/` directory, but configuation for most of the application are made using a web UI.
+
+> The VM folder has multiple playbooks, you can use them to configure the VM.
+
+## Install and configure **Docker**
+
+```bash
+ansible-playbook -i inventory/ playbooks/docker_install.yml --user tgingras --ask-become
+```
 
 ## Deploy **containers** (Not Yet Published)
 
 Use playbooks according to your needs.
+
+Currently there is a lot of duplicates, I will refactor the directory in the future.
+
+```bash
+cd containers/
+
+```
+
+## Clients (script to deploy tools on clients)
+- Install Zabbix Agent
+
+## Backup Script
+
+```bash
+cd backup/
+```
+
+## Maintenance Scripts
+- aureport
+- openSCAP remediate
+- Upgrade Linux systems

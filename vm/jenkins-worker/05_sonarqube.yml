@@ -1,0 +1,17 @@
+- name: Download and extract sonarqube cli and add cacert
+  hosts: jenkins-worker
+  gather_facts: no
+
+  vars:
+    url: "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.4.0.2170-linux.zip"
+    ca_certificate_name: "local_CA"
+
+  tasks:
+    - name: Download and extract sonar-scanner-cli
+      unarchive:
+        src: "{{ url }}"
+        dest: "/opt"
+
+    - name: Add cacert to java
+      shell: |
+        keytool -import -noprompt -trustcacerts -file /etc/pki/ca-trust/source/anchors/{{ ca_certificate_name }}.pem -alias studiowebux -keystore /opt/sonar-scanner-4.4.0.2170-linux/jre/lib/security/cacerts  -storepass changeit

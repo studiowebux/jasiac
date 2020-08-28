@@ -1,0 +1,8 @@
+---
+- name: Install and configure bind9
+  hosts: physical
+  become: yes
+  roles:
+    - { role: roles/installBind9 }
+    - { role: roles/ddnsBind9 }
+    - { role: roles/configureBind9 }

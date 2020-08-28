@@ -1,0 +1,6 @@
+---
+- name: Install and configure squid server
+  hosts: physical
+  become: yes
+  roles:
+    - { role: roles/installSquid }

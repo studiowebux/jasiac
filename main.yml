@@ -21,7 +21,7 @@
 - import_playbook: playbooks/libvirt_install.yml
 - import_playbook: playbooks/libvirt_configure_network.yml
 
-# RAID creation using mdadm is optional (earth.webux.lab uses the HP Raid Controller)
+# RAID creation using mdadm is optional (My server uses the HP Raid Controller)
 
 # This playbook can destroy the data on specified drives, use carefully
 - import_playbook: playbooks/filesystem_configuration.yml

@@ -1,0 +1,7 @@
+---
+- name: Install the root certificate
+  hosts: clients
+  become: yes
+
+  roles:
+    - { role: roles/installRootCertificate }

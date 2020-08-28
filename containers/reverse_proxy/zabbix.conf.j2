@@ -1,0 +1,41 @@
+upstream zabbix {
+	server               localhost:8081;
+}
+
+map $http_upgrade $connection_upgrade {
+	default              Upgrade;
+	''                   close;
+}
+
+server {
+	# SSL configuration
+	listen 443 ssl;
+	listen [::]:443 ssl;
+	server_name zabbix.{{ search_domain }};
+
+	include snippets/ssl-params.conf;
+	ssl_certificate /etc/nginx/ssl/zabbix.crt;
+	ssl_certificate_key /etc/nginx/ssl/zabbix.key;
+
+	access_log          /var/log/nginx/zabbix/access.log;
+	error_log           /var/log/nginx/zabbix/error.log;
+
+	location / {
+		proxy_set_header Host $host;
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header X-Forwarded-Port $server_port;
+		proxy_set_header X-Forwarded-For $remote_addr;
+		proxy_pass http://zabbix;
+		proxy_http_version 1.1;
+		proxy_read_timeout 900s;
+	}
+}
+
+
+server {
+	listen              80;
+	listen          	  [::]:80;
+	server_name         zabbix.{{ search_domain }};
+
+	return 301 https://zabbix.{{ search_domain }}$request_uri;
+}

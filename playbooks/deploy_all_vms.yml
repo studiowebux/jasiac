@@ -1,0 +1,25 @@
+---
+- name: Deploy all VMs
+  hosts: physical
+  become: yes
+
+  tasks:
+    - name: Deploy VMs
+      include_role:
+        name: roles/deployVM
+      vars:
+        iso_destination: "{{ item.iso_destination }}"
+        iso_filename: "{{ item.iso_filename }}"
+        iso_url: "{{ item.iso_url }}"
+        volume: "{{ item.volume }}"
+        kickstart_name: "{{ item.kickstart_name | default('') }}"
+        kickstarts_dir: "{{ item.kickstarts_dir | default('') }}"
+        vm_name: "{{ item.vm_name }}"
+        ram: "{{ item.ram }}"
+        vcpus: "{{ item.vcpus }}"
+        os_variant: "{{ item.os_variant | default('generic') }}"
+        graphics: "{{ item.graphics | default('vnc') }}"
+        networks: "{{ item.networks }}"
+        disks: "{{ item.disks }}"
+        autostart: "{{ item.autostart }}"
+      loop: "{{ vms }}"

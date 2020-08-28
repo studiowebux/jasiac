@@ -1,0 +1,103 @@
+- name: Deploy Gitlab with Docker
+  hosts: physical
+  gather_facts: no
+
+  vars:
+    srv_DOCKER: "/srv/DOCKER"
+    search_domain: "local.lab"
+
+  tasks:
+    - name: Install dependencies
+      package:
+        name:
+          - python-pip
+        state: present
+
+    - name: Install Python Docker
+      shell: "pip install docker"
+
+    - name: Create `{{ srv_DOCKER }}/volumes/gitlab` Directory
+      file:
+        path: "{{ srv_DOCKER }}/volumes/gitlab"
+        state: directory
+
+    - name: Deploy `Gitlab` with Docker
+      docker_container:
+        name: Gitlab
+        image: gitlab/gitlab-ce:latest
+        hostname: "git.{{ search_domain }}"
+        env:
+          EXTERNAL_URL: "https://git.{{ search_domain }}"
+        state: started
+        recreate: true
+        restart_policy: always
+        volumes:
+          - "{{ srv_DOCKER }}/volumes/gitlab/config:/etc/gitlab:Z"
+          - "{{ srv_DOCKER }}/volumes/gitlab/logs:/var/log/gitlab:Z"
+          - "{{ srv_DOCKER }}/volumes/gitlab/data:/var/opt/gitlab:Z"
+        ports:
+          - "4443:443"
+          - "8083:80"
+          - "2222:22"
+
+    - firewalld:
+        zone: public
+        port: 4443/tcp
+        permanent: yes
+        immediate: yes
+        state: enabled
+
+    - firewalld:
+        zone: public
+        port: 8083/tcp
+        permanent: yes
+        immediate: yes
+        state: enabled
+
+    - firewalld:
+        zone: public
+        port: 2222/tcp
+        permanent: yes
+        immediate: yes
+        state: enabled
+
+    - name: Allow Nginx to listen on tcp port 4443
+      seport:
+        ports: 4443
+        proto: tcp
+        setype: http_port_t
+        state: present
+
+    - name: Allow Nginx to listen on tcp port 8083
+      seport:
+        ports: 8083
+        proto: tcp
+        setype: http_port_t
+        state: present
+
+    - name: Create log directory
+      file:
+        path: /var/log/nginx/gitlab
+        state: directory
+
+    - set_fact:
+        cert_name: "git"
+        ca_certificate_name: "local_CA"
+        alt_name: "git.local.lab"
+
+    - name: generate SSL (git.crt & git.key)
+      import_tasks: ../tasks/generate_ssl.yml
+
+    - name: Attach Proxy
+      template:
+        src: "./reverse_proxy/gitlab.conf.j2"
+        dest: "/etc/nginx/conf.d/gitlab.conf"
+        owner: root
+        group: root
+        mode: "0644"
+        backup: yes
+
+    - name: Reload nginx to apply changes
+      systemd:
+        name: nginx
+        state: reloaded

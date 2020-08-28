@@ -1,0 +1,113 @@
+- name: Complete Monthly Backup of ServerName
+  hosts: physical
+  gather_facts: no
+
+  vars:
+    backupServer: "remote.local.lab"
+    backupPath: "/mnt/Backup"
+    recipient: "changeme@local.lab"
+
+  tasks:
+    - mount:
+        state: unmounted
+        path: /BACKUP
+
+    - file:
+        path: /BACKUP
+        owner: root
+        group: root
+        state: directory
+        mode: 0770
+
+    - mount:
+        boot: no
+        fstype: nfs
+        state: mounted
+        src: "{{ backupServer }}:{{ backupPath }}"
+        path: /BACKUP
+
+    - file:
+        path: /BACKUP/ServerName
+        state: directory
+
+    - file:
+        path: /BACKUP/ServerName/VM
+        state: directory
+
+    - shell: |
+        tar -czpfv \
+        /BACKUP/ServerName/DATA-$(date +%Y-%m-%d).tar.gz \
+        --exclude '/srv/DATA/images/*' \
+        --exclude '/srv/DATA/ISO/*' \
+        --exclude '/srv/DATA/syslinux/*' \
+        --exclude '/srv/DATA/virtual_machines/*' \
+        --exclude '/srv/DATA/image_builder/*' \
+        --exclude '/srv/DATA/pxe/tftpboot/*' \
+        /srv/DATA/
+      ignore_errors: yes
+
+    - shell: 'echo "Backup of DATA-$(date +%Y-%m-%d).tar.gz DONE" | mail -s ''Backup Status (DATA)'' {{ recipient }}'
+
+    - shell: |
+        tar -czpfv \
+        /BACKUP/ServerName/DOCKER-$(date +%Y-%m-%d).tar.gz \
+        --exclude '/srv/DOCKER/data/' \
+        /srv/DOCKER/
+      ignore_errors: yes
+
+    - shell: 'echo "Backup of DOCKER-$(date +%Y-%m-%d).tar.gz DONE" | mail -s ''Backup Status (DOCKER)'' {{ recipient }}'
+
+    - shell: |
+        tar -czpvf \
+        /BACKUP/ServerName/OS-$(date +%Y-%m-%d).tar.gz \
+        --exclude='/dev/*' \
+        --exclude='/proc/*' \
+        --exclude='/sys/*' \
+        --exclude='/tmp/*' \
+        --exclude='/run/*' \
+        --exclude='/mnt/*' \
+        --exclude='/media/*' \
+        --exclude='/srv/*' \
+        --exclude='/BACKUP/*' \
+        --exclude='/ISO/*' \
+        --exclude='/tftpboot/*' \
+        --exclude='/tools/*' \
+        --exclude='/images/*' \
+        --exclude='/storage/*' \
+        --exclude='/temp/*' \
+        --exclude='/lost+found' \
+        /
+      ignore_errors: yes
+
+    - shell: 'echo "Backup of OS-$(date +%Y-%m-%d).tar.gz DONE" | mail -s ''Backup Status (OS)'' {{ recipient }}'
+
+    - debug:
+        msg: "Backup virtual machines"
+
+    # virsh list
+    - shell: "virsh dumpxml {{ item }} > /BACKUP/ServerName/VM/{{ item }}.xml"
+      with_items:
+        - OpenVAS
+        - Staging
+        - kali
+        - Deepspeech
+        - Jenkins
+        - Odin
+
+    # find /srv/DATA/virtual_machines/ -type f -name "*.qcow2"
+    - shell: find /srv/DATA/virtual_machines/ -type f -name "*.qcow2"
+      register: vmpath
+
+    # - shell: "tar -czpf /BACKUP/ServerName/VM/$(echo {{ item }} | cut -d '/' -f 4- | sed -e 's|/|-|g')-$(date +%Y-%m-%d).tar.gz {{ item }}"
+    #   ignore_errors: yes
+    #   with_items: "{{ vmpath.stdout_lines }}"
+
+    - shell: "cp -v {{ item }} /BACKUP/ServerName/VM/$(echo {{ item }} | cut -d '/' -f 4- | sed -e 's|/|-|g')-$(date +%Y-%m-%d).backup"
+      # ignore_errors: yes
+      with_items: "{{ vmpath.stdout_lines }}"
+
+    - shell: "echo 'Backup of VMs DONE' | mail -s 'Backup Status (VM)' {{ recipient }}"
+
+    - mount:
+        state: unmounted
+        path: /BACKUP

@@ -1,0 +1,22 @@
+- name: Install Utilities
+  hosts: jenkins-worker
+  gather_facts: no
+
+  tasks:
+    - name: Install Tools and Utilities
+      package:
+        name:
+          - nano
+          - git
+          - unzip
+          - net-tools
+          - tmux
+        state: latest
+
+    - name: Install NodeJS repository
+      shell: "curl -sL https://rpm.nodesource.com/setup_12.x | bash -"
+
+    - name: Install NodeJS
+      yum:
+        name: nodejs
+        state: latest

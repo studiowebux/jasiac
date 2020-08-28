@@ -1,0 +1,167 @@
+- name: Deploy Bitwarden
+  hosts: physical
+  gather_facts: no
+
+  vars:
+    srv_DOCKER: "/srv/DOCKER"
+    srv_DATA: "/srv/DATA/"
+    search_domain: "local.lab"
+
+  vars_prompt:
+    - name: "installation_id"
+      prompt: "Installation ID"
+      private: no
+    - name: "installation_key"
+      prompt: "Installation Key"
+      private: no
+    - name: "smtp_password"
+      prompt: "SMTP Password"
+      private: yes
+
+  tasks:
+    - name: Create bitwarden directory
+      file:
+        path: "{{ srv_DOCKER }}/volumes/bitwarden"
+
+    - name: Download Bitwarden script
+      shell: |
+        curl -Lso bitwarden.sh https://go.btwrdn.co/bw-sh \
+        && chmod +x bitwarden.sh
+      args:
+        chdir: "{{ srv_DOCKER }}/volumes/bitwarden"
+
+    - name: Please run this command manually ` cd {{ srv_DOCKER }}/volumes/bitwarden && ./bitwarden.sh install`
+      pause:
+        prompt: "Press Enter to Continue"
+        echo: yes
+
+    # FIXME: The config.yml file is not created that way ...
+    # - name: Install bitwarden
+    #   expect:
+    #     command: "./bitwarden.sh install"
+    #     responses:
+    #       (?i)Enter the domain name for your Bitwarden instance(.*): "vault.{{ search_domain }}"
+    #       (?i)Do you want to use Let's Encrypt to generate a free SSL certificate(.*): "n"
+    #       (?i)Enter your installation id(.*): "{{ installation_id }}"
+    #       (?i)Enter your installation key(.*): "{{ installation_key }}"
+    #       (?i)Do you have a SSL certificate to use(.*): "y"
+    #       (?i)Is this a trusted SSL certificate(.*): "y"
+    #     echo: no
+    #     chdir: "{{ srv_DOCKER }}/volumes/bitwarden"
+
+    - set_fact:
+        cert_name: "vault"
+        ca_certificate_name: "local_CA"
+        alt_name: "vault.{{ search_domain }}"
+
+    - name: generate SSL (vault.crt & vault.key)
+      import_tasks: ../tasks/generate_ssl.yml
+
+    - name: Copy Certificate `vault.crt`
+      copy:
+        src: "{{ srv_DATA }}/certificates/vault.crt"
+        dest: "{{ srv_DOCKER }}/volumes/bitwarden/bwdata/ssl/vault.{{ search_domain }}/certificate.crt"
+        remote_src: yes
+
+    - name: Copy Key `vault.key`
+      copy:
+        src: "{{ srv_DATA }}/certificates/vault.key"
+        dest: "{{ srv_DOCKER }}/volumes/bitwarden/bwdata/ssl/vault.{{ search_domain }}/private.key"
+        remote_src: yes
+
+    - name: Copy CA Certificate
+      copy:
+        src: "{{ srv_DATA }}/certificates/local_CA.pem"
+        dest: "{{ srv_DOCKER }}/volumes/bitwarden/bwdata/ssl/vault.{{ search_domain }}/ca.crt"
+        remote_src: yes
+
+    - name: Disable HTTP port
+      lineinfile:
+        regexp: "http_port: 80"
+        line: "http_port: "
+        path: "{{ srv_DOCKER }}/volumes/bitwarden/bwdata/config.yml"
+
+    - name: Change HTTPS port
+      lineinfile:
+        regexp: "https_port: 443"
+        line: "https_port: 6443"
+        path: "{{ srv_DOCKER }}/volumes/bitwarden/bwdata/config.yml"
+
+    - name: Enable persistent storage
+      lineinfile:
+        regexp: "database_docker_volume: false"
+        line: "database_docker_volume: true"
+        path: "{{ srv_DOCKER }}/volumes/bitwarden/bwdata/config.yml"
+
+    - name: Configure SMTP Server (no-reply)
+      lineinfile:
+        regexp: "globalSettings__mail__replyToEmail=no-reply@vault.local.lab"
+        line: "globalSettings__mail__replyToEmail=no-reply@local.lab"
+        path: "{{ srv_DOCKER }}/volumes/bitwarden/bwdata/env/global.override.env"
+
+    - name: Configure SMTP Server (host)
+      lineinfile:
+        regexp: "globalSettings__mail__smtp__host=REPLACE"
+        line: "globalSettings__mail__smtp__host=smtp.sendgrid.net"
+        path: "{{ srv_DOCKER }}/volumes/bitwarden/bwdata/env/global.override.env"
+
+    - name: Configure SMTP Server (port)
+      lineinfile:
+        regexp: "globalSettings__mail__smtp__port=587"
+        line: "globalSettings__mail__smtp__port=465"
+        path: "{{ srv_DOCKER }}/volumes/bitwarden/bwdata/env/global.override.env"
+
+    - name: Configure SMTP Server (ssl)
+      lineinfile:
+        regexp: "globalSettings__mail__smtp__ssl=false"
+        line: "globalSettings__mail__smtp__ssl=true"
+        path: "{{ srv_DOCKER }}/volumes/bitwarden/bwdata/env/global.override.env"
+
+    - name: Configure SMTP Server (username)
+      lineinfile:
+        regexp: "globalSettings__mail__smtp__username=REPLACE"
+        line: "globalSettings__mail__smtp__username=apikey"
+        path: "{{ srv_DOCKER }}/volumes/bitwarden/bwdata/env/global.override.env"
+
+    - name: Configure SMTP Server (password)
+      lineinfile:
+        regexp: "globalSettings__mail__smtp__password=REPLACE"
+        line: "globalSettings__mail__smtp__password={{ smtp_password }}"
+        path: "{{ srv_DOCKER }}/volumes/bitwarden/bwdata/env/global.override.env"
+
+    - name: Configure admin
+      lineinfile:
+        regexp: "adminSettings__admins="
+        line: "adminSettings__admins=tommy@local.lab"
+        path: "{{ srv_DOCKER }}/volumes/bitwarden/bwdata/env/global.override.env"
+
+    - name: Rebuild and Start bitwarden
+      shell: "./bitwarden.sh rebuild && ./bitwarden.sh start"
+      args:
+        chdir: "{{ srv_DOCKER }}/volumes/bitwarden/"
+
+    - name: Create log directory
+      file:
+        path: /var/log/nginx/bitwarden
+        state: directory
+
+    - name: Attach Proxy
+      template:
+        src: "./reverse_proxy/bitwarden.conf.j2"
+        dest: "/etc/nginx/conf.d/bitwarden.conf"
+        owner: root
+        group: root
+        mode: "0644"
+        backup: yes
+
+    - name: Allow Nginx to listen on tcp port 6443
+      seport:
+        ports: 6443
+        proto: tcp
+        setype: http_port_t
+        state: present
+
+    - name: Reload nginx to apply changes
+      systemd:
+        name: nginx
+        state: reloaded

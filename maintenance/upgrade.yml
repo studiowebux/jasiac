@@ -1,0 +1,24 @@
+# ansible-playbook -i ../inventory/ upgrade.yml --user root --ask-become
+
+- name: Upgrade
+  hosts: upgrade
+  gather_facts: yes
+
+  tasks:
+    - name: Upgrade Debian/Ubuntu Hosts
+      apt:
+        upgrade: yes
+        autoclean: yes
+        autoremove: yes
+        update_cache: yes
+        only_upgrade: yes
+      when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+
+    - name: Upgrade CentOS/Red Hat Hosts
+      yum:
+        update_cache: yes
+        # autoremove: yes
+        name: "*"
+        state: latest
+        update_only: yes
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'

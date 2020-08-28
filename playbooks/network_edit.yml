@@ -1,0 +1,26 @@
+- name: Configure the production Network
+  hosts: physical
+  gather_facts: false
+  become: yes
+
+  tasks:
+    ## CORPO
+    - name: Add GW ({{ physical_lan_gateway }})) and DNS ({{ physical_lan_dns }}) to `{{ physical_lan_bridge_name }}`
+      shell: |
+        nmcli connection modify {{ physical_lan_bridge_name }} \
+        ipv4.method manual \
+        ipv4.addresses "{{ physical_lan_ip }}" \
+        ipv4.gateway "{{ physical_lan_gateway }}" \
+        ipv4.dns "{{ physical_lan_dns }}"
+
+    ## WAN
+    - name: Remove IPV4 DHCP from `{{ physical_wan_bridge_name }}`
+      shell: |
+        nmcli connection modify {{ physical_wan_bridge_name }} \
+        ipv4.method disabled \
+        ipv4.never-default true \
+        ipv6.method ignore \
+        ipv6.never-default true
+
+    - debug:
+        msg: "You might need to reboot the system to apply changes"

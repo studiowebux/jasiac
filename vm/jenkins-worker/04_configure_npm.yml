@@ -1,0 +1,20 @@
+- name: Add the CA certificate to npm
+  hosts: jenkins-worker
+  gather_facts: no
+
+  vars:
+    ca_certificate_name: "local_CA"
+
+  tasks:
+    - name: add the CA certificate to NPM
+      shell: "npm config set cafile /etc/pki/ca-trust/source/anchors/{{ ca_certificate_name }}.pem"
+
+    - name: Validate the CA certificate
+      shell: "npm config get cafile"
+      register: cafile_output
+
+    - debug:
+        msg: "{{ cafile_output }}"
+
+    - name: Set the registry to npmjs
+      shell: "npm config set registry http://registry.npmjs.org/"

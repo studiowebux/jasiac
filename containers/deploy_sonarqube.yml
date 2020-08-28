@@ -1,0 +1,107 @@
+- name: Deploy Sonarqube with Docker
+  hosts: physical
+  gather_facts: no
+
+  vars:
+    srv_DOCKER: "/srv/DOCKER"
+    search_domain: "local.lab"
+
+  vars_prompt:
+    - name: "smtp_password"
+      prompt: "SMTP Password"
+      private: yes
+
+  tasks:
+    - name: Install dependencies
+      package:
+        name:
+          - python-pip
+        state: present
+
+    - name: Install Python Docker
+      shell: "pip install docker"
+
+    - name: Increase 'vm.max_map_count' to '262144'
+      blockinfile:
+        insertafter: EOF
+        marker: "# {mark} Added by `deploy_sonarqube.yml`"
+        block: |
+          vm.max_map_count = 262144
+          fs.file-max = 65536
+        path: /etc/sysctl.conf
+
+    - name: Reload `sysctl`
+      shell: sysctl -p
+
+    - name: Create Sonarqube Directory
+      file:
+        path: "{{ srv_DOCKER }}/volumes/sonarqube"
+        state: directory
+
+    # - name: Create Sonarqube/postgresql_data Directory
+    #   file:
+    #     path: "{{ srv_DOCKER }}/volumes/sonarqube/postgresql_data"
+    #     state: directory
+
+    # - name: Create Sonarqube/sonarqube_data Directory
+    #   file:
+    #     path: "{{ srv_DOCKER }}/volumes/sonarqube/sonarqube_data"
+    #     state: directory
+
+    # - name: Update `sonarqube` permissions
+    #   shell: "chown -R 1001:1001 {{ srv_DOCKER }}/volumes/sonarqube/"
+
+    - name: Copy `docker-compose`
+      template:
+        src: "./sonarqube/docker-compose.yml.j2"
+        dest: "{{ srv_DOCKER }}/volumes/sonarqube/docker-compose.yml"
+        owner: root
+        group: root
+        mode: "0644"
+        backup: yes
+
+    - name: launch `docker-compose`
+      shell: "docker-compose up -d"
+      args:
+        chdir: "{{ srv_DOCKER }}/volumes/sonarqube/"
+
+    - firewalld:
+        zone: public
+        port: 9900/tcp
+        permanent: yes
+        immediate: yes
+        state: enabled
+
+    - name: Allow Nginx to listen on tcp port 9900
+      seport:
+        ports: 9900
+        proto: tcp
+        setype: http_port_t
+        state: present
+
+    - name: Create log directory
+      file:
+        path: /var/log/nginx/sonarqube
+        state: directory
+
+    - set_fact:
+        cert_name: "sonarqube"
+        ca_certificate_name: "local_CA"
+        alt_name: "sonarqube.local.lab"
+
+    - name: generate SSL (sonarqube.crt & sonarqube.key)
+      import_tasks: ../tasks/generate_ssl.yml
+
+    - name: Attach Proxy
+      template:
+        src: "./reverse_proxy/sonarqube.conf.j2"
+        dest: "/etc/nginx/conf.d/sonarqube.conf"
+        owner: root
+        group: root
+        mode: "0644"
+        backup: yes
+
+    - name: Reload nginx to apply changes
+      systemd:
+        name: nginx
+        state: reloaded

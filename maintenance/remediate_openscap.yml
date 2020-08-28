@@ -1,0 +1,16 @@
+# Use carefully
+
+- name: Launch openscap and remediate
+  hosts: physical
+  gather_facts: no
+
+  tasks:
+    - name: Evaluate the host using the standard profile and remediate
+      shell: |
+        date=date +"%Y-%m-%d-%T"
+        host=hostname
+        oscap xccdf eval --remediate \
+        --profile xccdf_org.ssgproject.content_profile_standard \
+        --results-arf /usr/share/nginx/html/openscap_reports/arf_remediate_$date_$host.xml \
+        --report /usr/share/nginx/html/openscap_reports/report_remediate_$date_$host.html \
+        /usr/share/xml/scap/ssg/content/ssg-centos7-ds.xml

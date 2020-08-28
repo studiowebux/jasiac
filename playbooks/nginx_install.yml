@@ -1,0 +1,17 @@
+---
+- name: Install and configure Nginx
+  hosts: physical
+  become: yes
+
+  vars_prompt:
+    - name: "ca_certificate_passphrase"
+      prompt: "CA Certificate Passphrase"
+      private: yes
+
+  vars:
+    cert_definition: "{{ nginx }}"
+
+  roles:
+    - { role: roles/installNginx }
+    - { role: roles/generateCertificate }
+    - { role: roles/configureNginx }

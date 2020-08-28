@@ -1,0 +1,6 @@
+---
+- name: Install, Configure Docker and docker-compose
+  hosts: docker
+  become: yes
+  roles:
+    - { role: roles/docker }

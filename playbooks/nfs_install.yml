@@ -1,0 +1,6 @@
+---
+- name: Install, configure and expose NFS Server
+  hosts: physical
+  become: yes
+  roles:
+    - { role: roles/installNFS }

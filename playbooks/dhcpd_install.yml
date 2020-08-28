@@ -1,0 +1,7 @@
+---
+- name: Install and configure dhcpd
+  hosts: physical
+  become: yes
+  roles:
+    - { role: roles/installDhcpd }
+    - { role: roles/configureDhcpd }

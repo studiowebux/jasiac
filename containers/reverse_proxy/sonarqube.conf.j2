@@ -1,0 +1,43 @@
+upstream sonarqube {
+	server               localhost:9900;
+}
+
+map $http_upgrade $connection_upgrade {
+	default              Upgrade;
+	''                   close;
+}
+
+server { 
+	# SSL configuration
+	listen 443 ssl;
+	listen [::]:443 ssl;
+	server_name sonarqube.{{ search_domain }};
+
+	client_max_body_size 5G;
+
+	include snippets/ssl-params.conf;
+	ssl_certificate /etc/nginx/ssl/sonarqube.crt;
+	ssl_certificate_key /etc/nginx/ssl/sonarqube.key;
+
+	access_log          /var/log/nginx/sonarqube/access.log;
+	error_log           /var/log/nginx/sonarqube/error.log;
+
+	location / {
+		proxy_set_header Host $host;
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header X-Forwarded-Port $server_port;
+		proxy_set_header X-Forwarded-For $remote_addr;
+		proxy_pass http://sonarqube;
+		proxy_http_version 1.1;
+		proxy_read_timeout 900s;
+	}
+}
+
+
+server {
+	listen              80;
+	listen          		[::]:80;
+	server_name         sonarqube.{{ search_domain }};
+
+	return 301 https://sonarqube.{{ search_domain }}$request_uri;
+}

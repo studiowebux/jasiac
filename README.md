@@ -7,3 +7,5 @@ Let me know if you have issues, or if you want new features
 # Installation
 
 # Usage
+
+Check `STEPS.md`
