@@ -1,0 +1,430 @@
+# First User
+username: "itguy"
+groupname: "admin_webux"
+comment: "itguy"
+passphrase: "0perat0r"
+userID: "1337"
+groupID: "1338"
+# python -c 'import crypt,getpass; print(crypt.crypt(getpass.getpass(), crypt.mksalt(crypt.METHOD_SHA512)))'
+password: "$6$nMiqRx1jPcG8kyBJ$EzfE7a0dpGuysW77hFAazfvrujS7m.HhNgKlbUJ53xTCeFUn0k8lk3gBSy/SG4TjewrRATk0ZzRKYrtke8Gy81" # itguy
+
+# SELinux
+wantedState: "permissive" # [OR] enforcing
+
+# SSH
+passwordAuthentication: "yes"
+sshPort: 22
+
+# Network
+interface_wan: "enp3s0f0"
+interface_lan: "enp3s0f1"
+bridge_wan: "br20"
+bridge_lan: "br100" # act as a trunk
+network:
+  noip:
+    - vlanid: 170
+      bridge: "{{ bridge_lan }}"
+      conn: "{{ bridge_lan }}.170"
+      networkName: "SECURE"
+    - vlanid: 130
+      bridge: "{{ bridge_lan }}"
+      conn: "{{ bridge_lan }}.130"
+      networkName: "LAB01"
+    - vlanid: 120
+      bridge: "{{ bridge_lan }}"
+      conn: "{{ bridge_lan }}.120"
+      networkName: "LAN"
+  static:
+    - vlanid: 110
+      bridge: "{{ bridge_lan }}"
+      conn: "{{ bridge_lan }}.110"
+      networkName: "CORPO"
+      staticIP: "192.168.110.10/24"
+
+# Mail
+url_port: "smtp.sendgrid.net:587"
+user: "apikey"
+test_recipient: "tommy@studiowebux.com"
+sendgrid_password: ""
+
+# RKHunter
+hostname: "earth.testing.lab"
+email: "tommy@studiowebux.com"
+
+# Libvirt Network
+networks:
+  - fn: INTERNAL_TRUNK
+    bridge_name: br100
+  - fn: WAN
+    bridge_name: br20
+
+# Raid
+raidDrive1: "sdb"
+raidDrive2: "sdc"
+raidName: "md0"
+raidMode: "1"
+raidRecipient: "tommy@studiowebux.com"
+
+#Filesystem
+DATA_drive: "md0"
+DOCKER_drive: "sdd"
+wipe_disks: no # USE CAREFULLY ! If set to yes|true all data will be lost on both drives.
+
+#Directory Structure
+DATA_partition: "md0"
+DOCKER_partition: "sdd1"
+srv_DOCKER: "/srv/DOCKER"
+srv_DATA: "/srv/DATA"
+acl_for_storage: yes
+docker_directories:
+  - "{{ srv_DOCKER }}/data" ## To hold the docker data, instead of /var/lib/docker
+  - "{{ srv_DOCKER }}/volumes" ## To hold the container volumes
+data_directories:
+  - path: "{{ srv_DATA }}/ISO" ## The ISO
+    mode: "0775"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/images" ## The extracted ISO and Boot From LAN images
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/tftpboot"
+    mode: "0755"
+    owner: root
+    group: root
+  - path: "{{ srv_DATA }}/pxe/tftpboot/ipv4"
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/tftpboot/ipv4/LEGACY"
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/tftpboot/ipv4/LEGACY/pxelinux.cfg"
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/tftpboot/ipv4/UEFI"
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/tftpboot/ipv4/UEFI/pxelinux.cfg"
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/tftpboot/ipv6"
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/tftpboot/ipv6/UEFI"
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/tftpboot/ipv6/UEFI/pxelinux.cfg"
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/tftpboot/netboot"
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/ipxe" ## The iPXE Stuffs
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/kickstarts" ## The kickstarts Stuffs
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/pxe/scripts" ## The pre/post scripts
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/tools"
+    mode: "0775"
+    owner: nobody
+    group: nobody
+  - path: "{{ srv_DATA }}/tools/certificates"
+    mode: "0755"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/storage"
+    mode: "0777"
+    owner: root
+    group: nobody
+  - path: "{{ srv_DATA }}/temp"
+    mode: "0776"
+    owner: nobody
+    group: nobody
+  - path: "{{ srv_DATA }}/virtual_machines"
+    mode: "0770"
+    owner: root
+    group: qemu
+  - path: "{{ srv_DATA }}/web_app"
+    mode: "0744"
+    owner: root
+    group: root
+  - path: "{{ srv_DATA }}/image_builder"
+    mode: "0755"
+    owner: root
+    group: root
+  - path: "{{ srv_DATA }}/certificates"
+    mode: "0770"
+    owner: root
+    group: root
+mount_points:
+  - "/ISO"
+  - "/images"
+  - "/tftpboot"
+  - "/storage"
+  - "/tools"
+  - "/temp"
+bind_mounts:
+  - from: "{{ srv_DATA }}/ISO"
+    to: "/ISO"
+  - from: "{{ srv_DATA }}/images"
+    to: "/images"
+  - from: "{{ srv_DATA }}/pxe/tftpboot"
+    to: "/tftpboot"
+  - from: "{{ srv_DATA }}/storage"
+    to: "/storage"
+  - from: "{{ srv_DATA }}/tools"
+    to: "/tools"
+  - from: "{{ srv_DATA }}/temp"
+    to: "/temp"
+
+# Certificate authority
+certificate_directory: "{{ srv_DATA }}/certificates/"
+ca_certificate_name: "testing_CA"
+ca_certificate_passphrase: ""
+ca_days: 1825
+ca_bits: 4096
+ca_encryption: "-sha256"
+ca_country: "CA"
+ca_state: "Somewhere"
+ca_locality: "Somewhere"
+ca_organization: "Studio Webux S.E.N.C"
+ca_organization_unit: "Lab"
+ca_common_name: "earth.testing.lab"
+ca_email_address: "tommy@studiowebux.com"
+certificate_expose_directory: "/tools/certificates/"
+search_domain: "testing.lab"
+
+pfsense:
+  - iso_url: "https://nyifiles.pfsense.org/mirror/downloads/pfSense-CE-2.4.5-RELEASE-amd64.iso.gz"
+    iso_filename: "pfSense-CE-2.4.5-RELEASE-amd64.iso"
+    iso_destination: "/ISO/PFSense/"
+    volume: "{{ srv_DATA }}/virtual_machines/PFSense/"
+    vm_name: "fw"
+    ram: 2048
+    vcpus: 2
+    os_variant: "freebsd11.2"
+    networks:
+      - "network=WAN,model=virtio"
+      - "network=INTERNAL_TRUNK,model=virtio"
+    disks:
+      - "path={{ srv_DATA }}/virtual_machines/PFSense/disk_01.qcow2,size=16,bus=virtio,format=qcow2"
+
+# PFSense Certificates
+pfsense_user:
+  type: "client" # server | client | ssl
+  cert_name: "tgingras"
+  ca_certificate_name: "testing_CA"
+  certificate_directory: "{{ srv_DATA }}/certificates/"
+  ca_certificate_passphrase: ""
+  cert_days: 730
+  cert_bits: 4096
+  cert_encryption: "-sha256"
+  cert_country: "CA"
+  cert_state: "Somewhere"
+  cert_locality: "Somewhere"
+  cert_organization: "Studio Webux S.E.N.C"
+  cert_organization_unit: "Lab"
+  cert_email_address: "tommy@studiowebux.com"
+  certificate_expose_directory: "/tools/certificates/"
+
+pfsense_cert:
+  type: "server" # server | client | ssl
+  cert_name: "fw"
+  ca_certificate_name: "testing_CA"
+  certificate_directory: "{{ srv_DATA }}/certificates/"
+  ca_certificate_passphrase: ""
+  domain_name: "testing.lab"
+  cert_days: 730
+  cert_bits: 4096
+  cert_encryption: "-sha256"
+  cert_country: "CA"
+  cert_state: "Somewhere"
+  cert_locality: "Somewhere"
+  cert_organization: "Studio Webux S.E.N.C"
+  cert_organization_unit: "Lab"
+  cert_email_address: "tommy@studiowebux.com"
+  certificate_expose_directory: "/tools/certificates/"
+  alt_name: "fw.testing.lab"
+
+client:
+  - iso_url: "http://centos.mirror.ca.planethoster.net/7.8.2003/isos/x86_64/CentOS-7-x86_64-LiveGNOME-2003.iso"
+    iso_filename: "CentOS-7-x86_64-LiveGNOME-2003.iso"
+    iso_destination: "/ISO/centos/7.8.2003/"
+    volume: "{{ srv_DATA }}/virtual_machines/Client/"
+    vm_name: "client"
+    ram: 4096
+    vcpus: 2
+    os_variant: "generic"
+    autostart: "no"
+    networks:
+      - "network=INTERNAL_TRUNK,model=virtio"
+
+# Network configuration after launching PFSense
+physical_lan_gateway: "192.168.120.1"
+physical_lan_ip: "192.168.120.10/24"
+physical_lan_bridge_name: "vlan-br100.120"
+physical_lan_dns: "192.168.120.1"
+physical_wan_bridge_name: "br20"
+
+# Bind9
+interface_ipv4: "192.168.110.0/24"
+interface_ipv6: "2001:db8:0:110::/64"
+# search_domain: "testing.lab"
+interface_ipv4_revzone: "110.168.192.in-addr.arpa"
+interface_ipv6_revzone: "0.1.1.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa."
+
+# DHCPd
+# interface_ipv4: ""
+# interface_ipv6: ""
+#interface_ipv4_revzone: ""
+#interface_ipv6_revzone: ""
+#search_domain: "testing.lab"
+interface_name: "br100.110"
+
+# Nginx
+url: "www.testing.lab"
+# search_domain: "testing.lab"
+# interface_ipv4: "192.168.110.0/24"
+# interface_ipv6: "2001:db8:0:110::/64"
+# srv_DATA: "/srv/DATA"
+nginx_expose_directories:
+  - tools
+  - images
+  - tftpboot
+  - ISO
+  - storage
+  - temp
+nginx_iPXE_directories:
+  - path: "{{ srv_DATA }}/pxe/ipxe/"
+    dir: ipxe
+  - path: "{{ srv_DATA }}/pxe/kickstarts/"
+    dir: kickstarts
+  - path: "{{ srv_DATA }}/pxe/scripts/"
+    dir: scripts
+nginx:
+  type: "ssl" # server | client | ssl
+  cert_name: "www"
+  ca_certificate_name: "testing_CA"
+  certificate_directory: "/srv/DATA/certificates/"
+  ca_certificate_passphrase: ""
+  domain_name: "testing.lab"
+  cert_days: 730
+  cert_bits: 4096
+  cert_encryption: "-sha256"
+  cert_country: "CA"
+  cert_state: "Somewhere"
+  cert_locality: "Somewhere"
+  cert_organization: "Studio Webux S.E.N.C"
+  cert_organization_unit: "Lab"
+  cert_email_address: "tommy@studiowebux.com"
+  certificate_expose_directory: "/tools/certificates/"
+  web_server_path: "/etc/nginx/ssl/"
+  alt_name: "www.testing.lab"
+# Install CA Certificate
+# certificate_expose_directory: "/tools/certificates/"
+# ca_certificate_name: "testing_CA"
+# search_domain: "testing.lab"
+
+# Squid
+# interface_ipv4: "192.168.110.0/24"
+# interface_ipv6: "2001:db8:0:110::/64"
+
+# OpenSCAP
+openscap_profile: "ssg-centos7-ds.xml"
+openscap_email: "changeme@local.lab"
+openscap_expose_directory: "/usr/share/nginx/html/openscap_reports/"
+
+# VM
+vms:
+  # Kali Linux
+  - iso_url: "https://cdimage.kali.org/kali-2020.2/kali-linux-2020.2-installer-amd64.iso"
+    iso_filename: "kali-linux-2020.2-installer-amd64.iso"
+    iso_destination: "/ISO/kali/"
+    volume: "/srv/DATA/virtual_machines/Kali/"
+    vm_name: "Kali"
+    ram: 8096
+    vcpus: 4
+    autostart: "no"
+    networks:
+      - "network=WAN,model=virtio"
+    disks:
+      - "path=/srv/DATA/virtual_machines/Kali/disk_01.qcow2,size=200,bus=virtio,format=qcow2"
+  # Jenkins
+  - iso_url: "http://mirror2.evolution-host.com/centos/7.8.2003/isos/x86_64/CentOS-7-x86_64-Minimal-2003.iso"
+    iso_filename: "CentOS-7-x86_64-Minimal-2003.iso"
+    iso_destination: "/ISO/centos/7.8.2003/"
+    volume: "/srv/DATA/virtual_machines/Jenkins/"
+    kickstarts_dir: "/srv/DATA/pxe/kickstarts"
+    kickstart_name: "jenkins.ks"
+    vm_name: "Jenkins"
+    ram: 4096
+    vcpus: 4
+    networks:
+      - "network=INTERNAL_TRUNK,model=virtio"
+    disks:
+      - "path=/srv/DATA/virtual_machines/Jenkins/disk_01.qcow2,size=20,bus=virtio,format=qcow2"
+      - "path=/srv/DATA/virtual_machines/Jenkins/disk_02.qcow2,size=80,bus=virtio,format=qcow2"
+  # DeepSpeech
+  - iso_url: "http://releases.ubuntu.com/18.04/ubuntu-18.04.5-live-server-amd64.iso"
+    iso_filename: "ubuntu-18.04.5-live-server-amd64.iso"
+    iso_destination: "/ISO/ubuntu/18.04.5/"
+    # kickstarts_dir: "/srv/DATA/pxe/kickstarts"
+    # kickstart_name: "deepspeech.ks"
+    volume: "/srv/DATA/virtual_machines/Deepspeech/"
+    vm_name: "Deepspeech"
+    ram: 16384
+    vcpus: 12
+    autostart: "no"
+    networks:
+      - "network=INTERNAL_TRUNK,model=virtio"
+    disks:
+      - "path=/srv/DATA/virtual_machines/Deepspeech/disk_01.qcow2,size=40,bus=virtio,format=qcow2"
+  # Staging
+  - iso_url: "http://mirror2.evolution-host.com/centos/7.8.2003/isos/x86_64/CentOS-7-x86_64-Minimal-2003.iso"
+    iso_filename: "CentOS-7-x86_64-Minimal-2003.iso"
+    iso_destination: "/ISO/centos/7.8.2003/"
+    volume: "/srv/DATA/virtual_machines/Staging/"
+    kickstarts_dir: "/srv/DATA/pxe/kickstarts"
+    kickstart_name: "staging.ks"
+    vm_name: "Staging"
+    ram: 4096
+    vcpus: 4
+    networks:
+      - "network=INTERNAL_TRUNK,model=virtio"
+    disks:
+      - "path=/srv/DATA/virtual_machines/Staging/disk_01.qcow2,size=20,bus=virtio,format=qcow2"
+      - "path=/srv/DATA/virtual_machines/Staging/disk_02.qcow2,size=80,bus=virtio,format=qcow2"
+  # OpenVAS
+  - iso_url: "https://files.greenbone.net/download/VM/gsm-ce-6.0.10.iso"
+    iso_filename: "gsm-ce-6.0.10.iso"
+    iso_destination: "/ISO/openvas/"
+    volume: "/srv/DATA/virtual_machines/OpenVAS/"
+    vm_name: "OpenVAS"
+    ram: 4096
+    vcpus: 4
+    networks:
+      - "network=WAN,model=virtio"
+    disks:
+      - "path=/srv/DATA/virtual_machines/OpenVAS/disk_01.qcow2,size=80,bus=sata,format=qcow2"
+
+# Docker
+# srv_DOCKER: "/srv/DOCKER"
+docker_network: "--default-address-pool base=172.24.0.0/13,size=24"
+composeURL: "https://github.com/docker/compose/releases/download/1.26.0/docker-compose-$(uname -s)-$(uname -m)"
+dockerRepoURL: "https://download.docker.com/linux/centos/docker-ce.repo"

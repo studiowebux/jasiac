@@ -1,0 +1,73 @@
+- name: Deploy nginx proxy with Docker
+  hosts: production
+  gather_facts: no
+
+  vars:
+    srv_DOCKER: "/srv/DOCKER"
+    search_domain: "webux.lab"
+
+  tasks:
+    - name: Install dependencies
+      package:
+        name:
+          - python-pip
+        state: present
+
+    - name: Install Python Docker
+      shell: "pip install docker"
+
+    # docker run -d -p 80:80 --name nginx-proxy --restart=always -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
+    # https://github.com/nginx-proxy/nginx-proxy
+
+    - name: Deploy nginx-proxy with Docker
+      docker_container:
+        name: nginx-proxy
+        image: jwilder/nginx-proxy
+        state: started
+        recreate: true
+        restart_policy: always
+        volumes:
+          - "/var/run/docker.sock:/tmp/docker.sock:ro"
+        ports:
+          - "80:80"
+
+    - firewalld:
+        zone: public
+        port: 80/tcp
+        permanent: yes
+        immediate: yes
+        state: enabled
+
+    # - name: Allow Nginx to listen on tcp port 9090
+    #   seport:
+    #     ports: 9090
+    #     proto: tcp
+    #     setype: http_port_t
+    #     state: present
+
+    # - name: Create log directory
+    #   file:
+    #     path: /var/log/nginx/nextcloud
+    #     state: directory
+
+    # - set_fact:
+    #     cert_name: "box"
+    #     ca_certificate_name: "local_CA"
+    #     alt_name: "box.local.lab"
+
+    # - name: generate SSL (box.crt & box.key)
+    #   import_tasks: ../tasks/generate_ssl.yml
+
+    # - name: Attach Proxy
+    #   template:
+    #     src: "./reverse_proxy/nextcloud.conf.j2"
+    #     dest: "/etc/nginx/conf.d/nextcloud.conf"
+    #     owner: root
+    #     group: root
+    #     mode: "0644"
+    #     backup: yes
+
+    # - name: Reload nginx to apply changes
+    #   systemd:
+    #     name: nginx
+    #     state: reloaded

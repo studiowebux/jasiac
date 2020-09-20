@@ -1,0 +1,16 @@
+- name: Install Utilities
+  hosts: production
+  gather_facts: no
+
+  tasks:
+    - name: Install Tools and Utilities
+      package:
+        name:
+          - nano
+          - git
+          - unzip
+          - net-tools
+          - tmux
+          - python36
+          - wget
+        state: latest

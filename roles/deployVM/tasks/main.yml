@@ -4,9 +4,10 @@
   shell: "virsh list --all | grep {{ vm_name }}"
   register: vm_exists
   ignore_errors: yes
+  changed_when: no
 
-- debug:
-    msg: "{{ vm_exists }}"
+# - debug:
+#     msg: "{{ vm_exists }}"
 
 - block:
     - include: "directory.yml"

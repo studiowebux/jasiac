@@ -289,7 +289,6 @@ Currently there is a lot of duplicates, I will refactor the directory in the fut
 
 ```bash
 cd containers/
-
 ```
 
 ## Clients (script to deploy tools on clients)

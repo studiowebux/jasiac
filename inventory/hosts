@@ -1,2 +1,8 @@
 [physical]
 1.2.3.4
+
+[upgrade]
+1.2.3.4
+
+[docker]
+1.2.3.4

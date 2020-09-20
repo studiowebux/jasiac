@@ -1,0 +1,32 @@
+- name: Create files and directories structure
+  hosts: production
+  gather_facts: no
+
+  vars:
+    DOCKER_partition: "vdb1"
+    srv_DOCKER: "/srv/DOCKER"
+
+  tasks:
+    ## Create Mount point for Docker
+    - name: Create {{ srv_DOCKER }}
+      file:
+        path: "{{ srv_DOCKER }}"
+        state: directory
+
+    ## Mount DOCKER
+    - name: mount /dev/{{ DOCKER_partition }} to {{ srv_DOCKER }}
+      mount:
+        path: "{{ srv_DOCKER }}"
+        src: "/dev/{{ DOCKER_partition }}"
+        state: mounted
+        fstype: xfs
+
+    # DOCKER Structure
+    - block:
+        - name: Create DOCKER Directories
+          file:
+            path: "{{ item }}"
+            state: directory
+          with_items:
+            - "{{ srv_DOCKER }}/data" ## To hold the docker data, instead of /var/lib/docker
+            - "{{ srv_DOCKER }}/volumes" ## To hold the container volumes

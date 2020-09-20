@@ -1,0 +1,99 @@
+- name: Create the Filesystem on specified drive
+  hosts: production
+  gather_facts: False
+
+  vars:
+    DOCKER_drive: "vdb" # Only one drive : sda, vdb, sdc, ...
+    wipe_disks: yes
+
+  tasks:
+    ## DOCKER DRIVE
+    - block:
+        - name: Check if the docker drive is available (No Partition), if not, notice to the user that the drive is not empty
+          shell: "lsblk /dev/{{ DOCKER_drive }} | grep part"
+          register: DOCKER_drive_has_partitions
+          ignore_errors: true
+
+        - pause:
+            prompt: "Do you want to clear all partitions for /dev/{{ DOCKER_drive }} (y/N) ?"
+            echo: yes
+          register: prompt_status
+          when: "DOCKER_drive_has_partitions.rc == 0 and (wipe_disks | bool) == False"
+
+        - debug:
+            msg: "The drive /dev/{{ DOCKER_drive }} will be use for the docker directory"
+          when: "DOCKER_drive_has_partitions.rc == 1"
+
+        - debug:
+            msg: "The partitions will be automatically cleared"
+          when: "prompt_status.user_input is defined and 'y' in prompt_status.user_input and DOCKER_drive_has_partitions.rc == 0  or DOCKER_drive_has_partitions.rc == 1 "
+
+        - fail:
+            msg: "Please choose a different drive and start the script again."
+          when: "prompt_status.user_input is defined and 'y' not in prompt_status.user_input and DOCKER_drive_has_partitions.rc == 0"
+
+    - set_fact:
+        drive: "/dev/{{ DOCKER_drive }}"
+
+    - debug:
+        msg: "using {{ drive }} for /srv/docker"
+
+    ## OPERATIONS on drives
+    - name: unmount Drives and directories
+      mount:
+        path: "{{ drive }}"
+        state: unmounted
+      with_items:
+        - "{{ drive }}1"
+
+    ## DOCKER DRIVE
+    - block:
+        - name: cleaning drive
+          shell: "wipefs -a {{ drive }}"
+          when: '"md" not in drive' ## When not RAID wipe the filesystem
+
+        - name: Get all partitions
+          parted:
+            device: "{{ drive }}"
+            unit: GB
+          register: sdX_info
+          when: '"md" not in drive'
+
+        - name: Remove all partitions
+          parted:
+            device: "{{ drive }}"
+            number: "{{ item.num }}"
+            state: absent
+          with_items:
+            - "{{ sdX_info.partitions }}"
+          when: '"md" not in drive'
+
+        - name: Create partition for {{ drive }}
+          parted:
+            device: "{{ drive }}"
+            number: 1
+            state: present
+            part_end: 100%
+            label: gpt
+          when: '"md" not in drive'
+
+        - name: Wait 30 seconds
+          pause:
+            seconds: 30
+          when: '"md" not in drive'
+
+        - name: Create filesystem for {{ drive }} when DISK
+          filesystem:
+            fstype: xfs
+            dev: "{{ drive }}1"
+            force: true
+          when: '"md" not in drive'
+
+        - name: Create filesystem for {{ drive }} when RAID device
+          filesystem:
+            fstype: xfs
+            dev: "{{ drive }}"
+            force: true
+          when: '"md" in drive'
+
+      when: "drive != ''"

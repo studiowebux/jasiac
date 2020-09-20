@@ -3,7 +3,7 @@
 It creates a User and a Group on Linux.
 Then the new user is added in the new group and also in the `wheel` group.
 
-> The goal of this role is to create an operator and an admin group on a newly installed Linux.
+> The goal of this role is to create an itguy and an admin group on a newly installed Linux.
 
 ## Requirements
 
@@ -17,9 +17,9 @@ python -c 'import crypt,getpass; print(crypt.crypt(getpass.getpass(), crypt.mksa
 
 | Variable   | Default values |
 | ---------- | -------------- |
-| username   | "operator"     |
+| username   | "itguy"     |
 | groupname  | "admin_webux"  |
-| comment    | "operator"     |
+| comment    | "itguy"     |
 | passphrase | "0perat0r"     |
 | userID     | "1337"         |
 | groupID    | "1338"         |
