@@ -3,9 +3,15 @@
   gather_facts: no
 
   vars:
-    srv_DOCKER: "/srv/DOCKER"
-    search_domain: "local.lab"
-    ca_certificate_name: "local_CA"
+    # srv_DOCKER: "/srv/DOCKER"
+    # search_domain: "local.lab"
+    # ca_certificate_name: "local_CA"
+    cert_definition: "{{ jenkins_ssl }}"
+
+  vars_prompt:
+    - name: "ca_certificate_passphrase"
+      prompt: "CA Certificate Passphrase"
+      private: yes
 
   tasks:
     - name: Install dependencies
@@ -107,13 +113,9 @@
         path: /var/log/nginx/jenkins
         state: directory
 
-    - set_fact:
-        cert_name: "jenkins"
-        ca_certificate_name: "local_CA"
-        alt_name: "jenkins.local.lab"
-
     - name: generate SSL (jenkins.crt & jenkins.key)
-      import_tasks: ../tasks/generate_ssl.yml
+      include_role:
+        name: ../roles/generateCertificate
 
     - name: Attach Proxy
       template:

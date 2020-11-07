@@ -35,3 +35,5 @@ $TTL    604800
 {{ interface_ipv6 | ipaddr('32') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     javr-staging.{{ search_domain }}.
 {{ interface_ipv6 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     sonarqube.{{ search_domain }}.
 {{ interface_ipv6 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     minio.{{ search_domain }}.
+{{ interface_ipv6 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     functions.{{ search_domain }}.
+{{ interface_ipv6 | ipaddr('10') | ipaddr('address') | ipaddr('revdns') }}   IN     PTR     functionsui.{{ search_domain }}.

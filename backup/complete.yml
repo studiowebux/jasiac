@@ -35,7 +35,7 @@
         state: directory
 
     - shell: |
-        tar -czpfv \
+        tar -czpvf \
         /BACKUP/ServerName/DATA-$(date +%Y-%m-%d).tar.gz \
         --exclude '/srv/DATA/images/*' \
         --exclude '/srv/DATA/ISO/*' \
@@ -49,7 +49,7 @@
     - shell: 'echo "Backup of DATA-$(date +%Y-%m-%d).tar.gz DONE" | mail -s ''Backup Status (DATA)'' {{ recipient }}'
 
     - shell: |
-        tar -czpfv \
+        tar -czpvf \
         /BACKUP/ServerName/DOCKER-$(date +%Y-%m-%d).tar.gz \
         --exclude '/srv/DOCKER/data/' \
         /srv/DOCKER/
@@ -93,6 +93,7 @@
         - Deepspeech
         - Jenkins
         - Odin
+        - Production
 
     # find /srv/DATA/virtual_machines/ -type f -name "*.qcow2"
     - shell: find /srv/DATA/virtual_machines/ -type f -name "*.qcow2"
@@ -102,7 +103,7 @@
     #   ignore_errors: yes
     #   with_items: "{{ vmpath.stdout_lines }}"
 
-    - shell: "cp -v {{ item }} /BACKUP/ServerName/VM/$(echo {{ item }} | cut -d '/' -f 4- | sed -e 's|/|-|g')-$(date +%Y-%m-%d).backup"
+    - shell: "cp -v {{ item }} /BACKUP/ServerName/VM/$(echo {{ item }} | cut -d '/' -f 4- | sed -e 's|/|-|g')-$(date +%Y-%m-%d).backup.tar.gz"
       # ignore_errors: yes
       with_items: "{{ vmpath.stdout_lines }}"
 

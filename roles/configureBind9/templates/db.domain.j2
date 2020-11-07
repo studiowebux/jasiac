@@ -51,7 +51,9 @@ jira.{{ search_domain }}.                       IN      A       {{ interface_ipv
 confluence.{{ search_domain }}.                 IN      A       {{ interface_ipv4 | ipaddr('10') | ipaddr('address') }}
 javr-staging.{{ search_domain }}.               IN      A       {{ interface_ipv4 | ipaddr('32') | ipaddr('address') }}
 sonarqube.{{ search_domain }}.                  IN      A       {{ interface_ipv4 | ipaddr('10') | ipaddr('address') }}
-minio.{{ search_domain }}.                  IN      A       {{ interface_ipv4 | ipaddr('10') | ipaddr('address') }}
+minio.{{ search_domain }}.                      IN      A       {{ interface_ipv4 | ipaddr('10') | ipaddr('address') }}
+functions.{{ search_domain }}.                  IN      A       {{ interface_ipv4 | ipaddr('10') | ipaddr('address') }}
+functionsui.{{ search_domain }}.                IN      A       {{ interface_ipv4 | ipaddr('10') | ipaddr('address') }}
 
 ; Applications IPv6
 jenkins.{{ search_domain }}.                    IN      AAAA       {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}

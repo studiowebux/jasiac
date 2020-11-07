@@ -3,8 +3,14 @@
   gather_facts: False
 
   vars:
-    srv_DOCKER: "/srv/DOCKER"
-    search_domain: "local.lab"
+    # srv_DOCKER: "/srv/DOCKER"
+    # search_domain: "local.lab"
+    cert_definition: "{{ zabbix_ssl }}"
+
+  vars_prompt:
+    - name: "ca_certificate_passphrase"
+      prompt: "CA Certificate Passphrase"
+      private: yes
 
   tasks:
     - name: Install dependencies
@@ -78,13 +84,9 @@
         path: /var/log/nginx/zabbix
         state: directory
 
-    - set_fact:
-        cert_name: "zabbix"
-        ca_certificate_name: "local_CA"
-        alt_name: "zabbix.local.lab"
-
     - name: generate SSL (zabbix.crt & zabbix.key)
-      import_tasks: ../tasks/generate_ssl.yml
+      include_role:
+        name: ../roles/generateCertificate
 
     - name: Attach Proxy
       template:

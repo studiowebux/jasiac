@@ -5,3 +5,9 @@
     name: named
     state: started
     enabled: yes
+
+- name: Restart named
+  service:
+    name: named
+    state: restarted
+    enabled: yes

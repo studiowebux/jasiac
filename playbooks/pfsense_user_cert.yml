@@ -9,7 +9,7 @@
       private: yes
 
   vars:
-    cert_definition: "{{ pfsense_user }}"
+    cert_definition: "{{ pfsense_client }}"
 
   roles:
     - { role: roles/generateCertificate }

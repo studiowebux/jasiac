@@ -18,7 +18,7 @@ network --bootproto=dhcp --activate --onboot=on --ipv6=auto --device=eth0
 network  --hostname=production.webux.lab
 
 #Root password
-rootpw --plaintext Studiow3bux
+rootpw --plaintext SomeNotS3cureP455W0rd
 
 #Initial user (user with sudo capabilities) 
 # S3cOp3r4!0r

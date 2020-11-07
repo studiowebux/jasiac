@@ -1,11 +1,14 @@
-- name: Deploy Next Cloud with Docker
+# Install CLI tool : brew install iron-functions
+# Or : curl -LSs git.io/ironfn | sh
+
+- name: Deploy Iron Functions UI with Docker
   hosts: physical
   gather_facts: no
 
   vars:
     # srv_DOCKER: "/srv/DOCKER"
     # search_domain: "local.lab"
-    cert_definition: "{{ nextcloud_ssl }}"
+    cert_definition: "{{ ironFunctionUI_ssl }}"
 
   vars_prompt:
     - name: "ca_certificate_passphrase"
@@ -19,59 +22,50 @@
           - python-pip
         state: present
 
-    - name: Install Python Docker
-      shell: "pip install docker"
+    - name: Install or upgrade Python Docker
+      shell: "pip install --upgrade docker"
 
-    - name: Create `{{ srv_DOCKER }}/volumes/nextcloud` Directory
-      file:
-        path: "{{ srv_DOCKER }}/volumes/nextcloud"
-        state: directory
-
-    - name: Create `{{ srv_DOCKER }}/volumes/nextcloud/share` Directory
-      file:
-        path: "{{ srv_DOCKER }}/volumes/nextcloud/share"
-        state: directory
-
-    - name: Deploy nextcloud with Docker
+    - name: Deploy `Iron Functions UI` with Docker
       docker_container:
-        name: Nextcloud
-        image: nextcloud
+        name: IronFunctionsUI
+        image: iron/functions-ui:0.0.2
         state: started
         recreate: true
         restart_policy: always
-        volumes:
-          - "{{ srv_DOCKER }}/volumes/nextcloud:/var/www/html"
-          - "{{ srv_DOCKER }}/volumes/nextcloud/share:/srv/share"
+        links: 
+          - IronFunctions:api
+        env:
+          API_URL: http://api:8080
         ports:
-          - "9090:80"
+          - "4000:4000"
 
     - firewalld:
         zone: public
-        port: 9090/tcp
+        port: 4000/tcp
         permanent: yes
         immediate: yes
         state: enabled
 
-    - name: Allow Nginx to listen on tcp port 9090
+    - name: Allow Nginx to listen on tcp port 4000
       seport:
-        ports: 9090
+        ports: 4000
         proto: tcp
         setype: http_port_t
         state: present
 
     - name: Create log directory
       file:
-        path: /var/log/nginx/nextcloud
+        path: /var/log/nginx/functionsui
         state: directory
 
-    - name: generate SSL (box.crt & box.key)
+    - name: generate SSL (functionsUI.crt & functionsUI.key)
       include_role:
         name: ../roles/generateCertificate
 
     - name: Attach Proxy
       template:
-        src: "./reverse_proxy/nextcloud.conf.j2"
-        dest: "/etc/nginx/conf.d/nextcloud.conf"
+        src: "./reverse_proxy/functionsUI.conf.j2"
+        dest: "/etc/nginx/conf.d/functionsUI.conf"
         owner: root
         group: root
         mode: "0644"

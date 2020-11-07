@@ -1,4 +1,12 @@
 ---
+- name: Stop Docker service before
+  systemd:
+    name: docker
+    state: stopped
+
+- name: Move existant files to '{{ srv_DOCKER }}/data'
+  shell: sudo rsync -aP /var/lib/docker/ {{ srv_DOCKER }}/data
+
 # https://linuxconfig.org/how-to-move-docker-s-default-var-lib-docker-to-another-directory-on-ubuntu-debian-linux
 - name: Configure docker data directory to `{{ srv_DOCKER }}/data` and configure the network
   lineinfile:
@@ -10,4 +18,6 @@
   file:
     path: "/var/lib/docker/"
     state: absent
-  notify: Start and Enable docker
+  notify: 
+    - Reload Daemon
+    - Start and Enable docker

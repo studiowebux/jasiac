@@ -3,8 +3,9 @@
   gather_facts: no
 
   vars:
-    srv_DOCKER: "/srv/DOCKER"
-    search_domain: "local.lab"
+    # srv_DOCKER: "/srv/DOCKER"
+    # search_domain: "local.lab"
+    cert_definition: "{{ minio_ssl }}"
 
   vars_prompt:
     - name: access_key
@@ -12,6 +13,9 @@
       private: no
     - name: secret_key
       prompt: "Secret Key"
+      private: yes
+    - name: "ca_certificate_passphrase"
+      prompt: "CA Certificate Passphrase"
       private: yes
 
   tasks:
@@ -64,13 +68,9 @@
         path: /var/log/nginx/minio
         state: directory
 
-    - set_fact:
-        cert_name: "minio"
-        ca_certificate_name: "local_CA"
-        alt_name: "minio.local.lab"
-
     - name: generate SSL (minio.crt & minio.key)
-      import_tasks: ../tasks/generate_ssl.yml
+      include_role:
+        name: ../roles/generateCertificate
 
     - name: Attach Proxy
       template:

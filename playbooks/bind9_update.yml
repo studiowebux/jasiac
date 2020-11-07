@@ -1,0 +1,6 @@
+---
+- name: Apply changes to bind9
+  hosts: physical
+  become: yes
+  roles:
+    - { role: roles/configureBind9 }

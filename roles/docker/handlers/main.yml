@@ -6,3 +6,7 @@
     name: docker
     state: started
     enabled: yes
+
+- name: Reload Daemon
+  systemd:
+    daemon_reload: yes

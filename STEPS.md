@@ -289,9 +289,14 @@ Currently there is a lot of duplicates, I will refactor the directory in the fut
 
 ```bash
 cd containers/
+
+## Iron Functions Container
+ansible-playbook -i inventory/production deploy_ironfunctions.yml --user tgingras --become --ask-become
+
 ```
 
 ## Clients (script to deploy tools on clients)
+
 - Install Zabbix Agent
 
 ## Backup Script
@@ -301,6 +306,13 @@ cd backup/
 ```
 
 ## Maintenance Scripts
+
 - aureport
 - openSCAP remediate
 - Upgrade Linux systems
+
+## Update DNS configuration
+
+```bash
+jasiac % ansible-playbook -i inventory/production playbooks/bind9_update.yml --user tgingras --become --ask-become
+```

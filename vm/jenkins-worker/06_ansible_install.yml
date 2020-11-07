@@ -1,0 +1,11 @@
+- name: Install Ansible
+  hosts: jenkins-worker
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: Install Ansible
+      package:
+        name:
+          - ansible
+        state: latest

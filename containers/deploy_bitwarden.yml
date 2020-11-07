@@ -3,9 +3,10 @@
   gather_facts: no
 
   vars:
-    srv_DOCKER: "/srv/DOCKER"
-    srv_DATA: "/srv/DATA/"
-    search_domain: "local.lab"
+    # srv_DOCKER: "/srv/DOCKER"
+    # srv_DATA: "/srv/DATA/"
+    # search_domain: "local.lab"
+    cert_definition: "{{ bitwarden_ssl }}"
 
   vars_prompt:
     - name: "installation_id"
@@ -16,6 +17,9 @@
       private: no
     - name: "smtp_password"
       prompt: "SMTP Password"
+      private: yes
+    - name: "ca_certificate_passphrase"
+      prompt: "CA Certificate Passphrase"
       private: yes
 
   tasks:
@@ -49,13 +53,9 @@
     #     echo: no
     #     chdir: "{{ srv_DOCKER }}/volumes/bitwarden"
 
-    - set_fact:
-        cert_name: "vault"
-        ca_certificate_name: "local_CA"
-        alt_name: "vault.{{ search_domain }}"
-
     - name: generate SSL (vault.crt & vault.key)
-      import_tasks: ../tasks/generate_ssl.yml
+      include_role:
+        name: ../roles/generateCertificate
 
     - name: Copy Certificate `vault.crt`
       copy:

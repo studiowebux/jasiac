@@ -1,0 +1,8 @@
+---
+# ansible-playbook -i ../../inventory/production 06_docker_install.yml --user root
+
+- name: Install, Configure Docker and docker-compose
+  hosts: production
+  become: yes
+  roles:
+    - { role: ../../roles/docker }

@@ -6,4 +6,6 @@
     named-checkzone {{ search_domain }} /etc/named/zones/db.{{ search_domain }} &&
     named-checkzone {{ interface_ipv4_revzone }} /etc/named/zones/db.{{ interface_ipv4_revzone }} &&
     named-checkzone {{ interface_ipv6_revzone }} /etc/named/zones/db.{{ interface_ipv6_revzone }}
-  notify: Start and Enable named
+  notify: 
+    - Start and Enable named
+    - Restart named
