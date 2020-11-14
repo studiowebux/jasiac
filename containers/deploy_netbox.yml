@@ -1,0 +1,99 @@
+- name: Deploy netbox with Docker
+  hosts: physical
+  gather_facts: False
+
+  vars:
+    # srv_DOCKER: "/srv/DOCKER"
+    # search_domain: "local.lab"
+    cert_definition: "{{ netbox_ssl }}"
+
+  vars_prompt:
+    - name: "ca_certificate_passphrase"
+      prompt: "CA Certificate Passphrase"
+      private: yes
+
+  tasks:
+    - name: Install dependencies
+      package:
+        name:
+          - python-pip
+        state: present
+
+    - name: Install Python Docker
+      shell: "pip install docker"
+
+    - name: Create `{{ srv_DOCKER }}/volumes/netbox` Directory
+      file:
+        path: "{{ srv_DOCKER }}/volumes/netbox"
+        state: directory
+
+    - name: Clean Netbox repository
+      file:
+        path: "{{ srv_DOCKER }}/volumes/netbox/netbox-docker"
+        state: absent
+
+    - name: Clone Netbox repository
+      shell: git clone -b release https://github.com/netbox-community/netbox-docker.git
+      args:
+        chdir: "{{ srv_DOCKER }}/volumes/netbox/"
+
+    - name: 
+      shell: |
+        tee docker-compose.override.yml <<EOF
+        version: '3.4'
+        services:
+          nginx:
+            ports:
+              - 8889:8080
+        EOF
+      args:
+        chdir: "{{ srv_DOCKER }}/volumes/netbox/netbox-docker/"
+
+    - name: launch the docker-compose
+      shell: "docker-compose pull && docker-compose up -d"
+      args:
+        chdir: "{{ srv_DOCKER }}/volumes/netbox/netbox-docker/"
+
+    - firewalld:
+        zone: public
+        port: 8889/tcp
+        permanent: yes
+        immediate: yes
+        state: enabled
+
+    - name: Allow Nginx to listen on tcp port 8889
+      seport:
+        ports: 8889
+        proto: tcp
+        setype: http_port_t
+        state: present
+
+    - name: Create log directory
+      file:
+        path: /var/log/nginx/netbox
+        state: directory
+
+    - name: generate SSL (netbox.crt & netbox.key)
+      include_role:
+        name: ../roles/generateCertificate
+
+    - name: Attach Proxy
+      template:
+        src: "./reverse_proxy/netbox.conf.j2"
+        dest: "/etc/nginx/conf.d/netbox.conf"
+        owner: root
+        group: root
+        mode: "0644"
+        backup: yes
+
+    - name: Reload nginx to apply changes
+      systemd:
+        name: nginx
+        state: reloaded
+
+    - debug:
+        msg: | 
+          Default Credentials:
+          Username: admin
+          Password: admin
+          API Token: 0123456789abcdef0123456789abcdef01234567

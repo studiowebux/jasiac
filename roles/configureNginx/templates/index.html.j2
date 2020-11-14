@@ -19,6 +19,9 @@
         <a href="http://box.{{ search_domain }}" target="_blank">Nextcloud</a>
       </li>
       <li>
+        <a href="http://192.168.2.40:9090/login" target="_blank">Public Nextcloud</a>
+      </li>
+      <li>
         <a href="http://jenkins.{{ search_domain }}" target="_blank">Jenkins</a>
       </li>
       <li>
@@ -67,9 +70,44 @@
           >Minio</a
         >
       </li>
+      <li>
+        <a href="https://functions.{{ search_domain }}" target="_blank"
+          >Iron Functions</a
+        >
+      </li>
+      <li>
+        <a href="https://functionsui.{{ search_domain }}" target="_blank"
+          >Iron Functions UI</a
+        >
+      </li>
+      <li>
+        <a href="https://netbox.{{ search_domain }}" target="_blank"
+          >Netbox</a
+        >
+      </li>
+      <li>
+        <a href="http://192.168.2.40:9980/admin/" target="_blank"
+          >Pi Hole</a
+        >
+      </li>
+      <li>
+        <a href="http://library.webuxlab.com/" target="_blank"
+          >Library Manager</a
+        >
+      </li>
     </ul>
 
+    <!-- <h3>Boot From Lan and Network Installation</h3>
+    <ul>
+      <li><a href="/tftpboot" target="_blank">tftpboot</a></li>
+      <li><a href="/ipxe" target="_blank">iPXE</a></li>
+      <li><a href="/kickstarts" target="_blank">Kickstarts</a></li>
+      <li><a href="/scripts" target="_blank">Scripts</a></li>
+      <li><a href="/images" target="_blank">Images</a></li>
+    </ul> -->
+
     <hr />
+
 
     <h3>Reports</h3>
     <ul>
@@ -85,6 +123,9 @@
         {{ interface_ipv4 | ipaddr('32') | ipaddr('address') }} (staging.{{
           search_domain
         }})
+      </li>
+      <li>
+        Production : 192.168.2.40 (library.webuxlab.com)
       </li>
       <li>
         OpenVAS :
@@ -107,5 +148,30 @@
     </ul>
 
     <hr />
+
+    <h3>Hosts</h3>
+    <ul>
+      <li>
+        Yggdrasil :
+        {{ interface_ipv4 | ipaddr('5') | ipaddr('address') }} (yggdrasil.{{
+          search_domain
+        }})
+      </li>
+      <li>
+        Eldir :
+        {{ interface_ipv4 | ipaddr('10') | ipaddr('address') }} (eldir.{{
+          search_domain
+        }})
+      </li>
+    </ul>
+
+    <hr />
+
+    <h3>Network</h3>
+    <ul>
+      <li>
+        Netgear : 192.168.70.254
+      </li>
+    </ul>
   </body>
 </html>

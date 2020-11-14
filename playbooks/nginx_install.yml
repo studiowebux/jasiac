@@ -9,7 +9,7 @@
       private: yes
 
   vars:
-    cert_definition: "{{ nginx }}"
+    cert_definition: "{{ nginx_ssl }}"
 
   roles:
     - { role: roles/installNginx }

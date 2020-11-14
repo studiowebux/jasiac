@@ -12,7 +12,7 @@ $TTL    604800 ; 1 week
 
 
 ; name servers - A records
-                                                        A	      {{ interface_ipv4 | ipaddr('10') | ipaddr('address') }}
+                                                        A	    {{ interface_ipv4 | ipaddr('10') | ipaddr('address') }}
 ns1.{{ search_domain }}.                        IN      A       {{ interface_ipv4 | ipaddr('10') | ipaddr('address') }}
 
 ; {{ interface_ipv4 | ipaddr('10') }} - A records
@@ -27,14 +27,14 @@ backup.{{ search_domain }}.                     IN      A       {{ interface_ipv
 
 
 ; {{ interface_ipv6 | ipaddr('10') }} - AAAA records
-ns1.{{ search_domain }}.                        IN      AAAA       {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
-main.{{ search_domain }}.                       IN      AAAA       {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
-www.{{ search_domain }}.                        IN      AAAA       {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
-nfs.{{ search_domain }}.                        IN      AAAA       {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
+ns1.{{ search_domain }}.                        IN      AAAA    {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
+main.{{ search_domain }}.                       IN      AAAA    {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
+www.{{ search_domain }}.                        IN      AAAA    {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
+nfs.{{ search_domain }}.                        IN      AAAA    {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
 
 ; Hosts - AAAA records
-eldir.{{ search_domain }}.                      IN      AAAA       {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
-yggdrasil.{{ search_domain }}.                  IN      AAAA       {{ interface_ipv6 | ipaddr('5') | ipaddr('address') }}
+eldir.{{ search_domain }}.                      IN      AAAA    {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
+yggdrasil.{{ search_domain }}.                  IN      AAAA    {{ interface_ipv6 | ipaddr('5') | ipaddr('address') }}
 
 ; Applications IPv4
 jenkins.{{ search_domain }}.                    IN      A       {{ interface_ipv4 | ipaddr('10') | ipaddr('address') }}
@@ -54,23 +54,27 @@ sonarqube.{{ search_domain }}.                  IN      A       {{ interface_ipv
 minio.{{ search_domain }}.                      IN      A       {{ interface_ipv4 | ipaddr('10') | ipaddr('address') }}
 functions.{{ search_domain }}.                  IN      A       {{ interface_ipv4 | ipaddr('10') | ipaddr('address') }}
 functionsui.{{ search_domain }}.                IN      A       {{ interface_ipv4 | ipaddr('10') | ipaddr('address') }}
+netbox.{{ search_domain }}.                     IN      A       {{ interface_ipv4 | ipaddr('10') | ipaddr('address') }}
 
 ; Applications IPv6
-jenkins.{{ search_domain }}.                    IN      AAAA       {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
-box.{{ search_domain }}.                        IN      AAAA       {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
-zabbix.{{ search_domain }}.                     IN      AAAA       {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
-portainer.{{ search_domain }}.                  IN      AAAA       {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
-inventory.{{ search_domain }}.                  IN      AAAA       {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
-git.{{ search_domain }}.                        IN      AAAA       {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
-registry.{{ search_domain }}.                   IN      AAAA       {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
-npm.{{ search_domain }}.                        IN      AAAA       {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
-plantuml.{{ search_domain }}.                   IN      AAAA       {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
-vault.{{ search_domain }}.                      IN      AAAA       {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
-jira.{{ search_domain }}.                       IN      AAAA       {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
-confluence.{{ search_domain }}.                 IN      AAAA       {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
-javr-staging.{{ search_domain }}.               IN      AAAA       {{ interface_ipv6 | ipaddr('32') | ipaddr('address') }}
-sonarqube.{{ search_domain }}.               IN      AAAA       {{ interface_ipv6 | ipaddr('32') | ipaddr('address') }}
-minio.{{ search_domain }}.               IN      AAAA       {{ interface_ipv6 | ipaddr('32') | ipaddr('address') }}
+jenkins.{{ search_domain }}.                    IN      AAAA    {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
+box.{{ search_domain }}.                        IN      AAAA    {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
+zabbix.{{ search_domain }}.                     IN      AAAA    {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
+portainer.{{ search_domain }}.                  IN      AAAA    {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
+inventory.{{ search_domain }}.                  IN      AAAA    {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
+git.{{ search_domain }}.                        IN      AAAA    {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
+registry.{{ search_domain }}.                   IN      AAAA    {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
+npm.{{ search_domain }}.                        IN      AAAA    {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
+plantuml.{{ search_domain }}.                   IN      AAAA    {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
+vault.{{ search_domain }}.                      IN      AAAA    {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
+jira.{{ search_domain }}.                       IN      AAAA    {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
+confluence.{{ search_domain }}.                 IN      AAAA    {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
+javr-staging.{{ search_domain }}.               IN      AAAA    {{ interface_ipv6 | ipaddr('32') | ipaddr('address') }}
+sonarqube.{{ search_domain }}.                  IN      AAAA    {{ interface_ipv6 | ipaddr('32') | ipaddr('address') }}
+minio.{{ search_domain }}.                      IN      AAAA    {{ interface_ipv6 | ipaddr('32') | ipaddr('address') }}
+functions.{{ search_domain }}.                  IN      AAAA    {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
+functionsui.{{ search_domain }}.                IN      AAAA    {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
+netbox.{{ search_domain }}.                     IN      AAAA    {{ interface_ipv6 | ipaddr('10') | ipaddr('address') }}
 
 ; VM
 odin.{{ search_domain }}.                       IN      A       {{ interface_ipv4 | ipaddr('1') | ipaddr('address') }}

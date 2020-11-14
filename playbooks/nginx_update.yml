@@ -1,0 +1,7 @@
+---
+- name: Configure Nginx
+  hosts: physical
+  become: yes
+
+  roles:
+    - { role: roles/configureNginx }

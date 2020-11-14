@@ -1,0 +1,41 @@
+upstream netbox {
+	server               localhost:8889;
+}
+
+map $http_upgrade $connection_upgrade {
+	default              Upgrade;
+	''                   close;
+}
+
+server { 
+	# SSL configuration
+	listen 443 ssl;
+	listen [::]:443 ssl;
+	server_name netbox.{{ search_domain }};
+
+	include snippets/ssl-params.conf;
+	ssl_certificate /etc/nginx/ssl/netbox.crt;
+	ssl_certificate_key /etc/nginx/ssl/netbox.key;
+ 
+	access_log          /var/log/nginx/netbox/access.log;
+	error_log           /var/log/nginx/netbox/error.log;
+
+	location / {
+		proxy_set_header Host $host;
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header X-Forwarded-Port $server_port;
+		proxy_set_header X-Forwarded-For $remote_addr;
+		proxy_pass http://netbox;
+		proxy_http_version 1.1;
+		proxy_read_timeout 900s;
+	}
+}
+
+
+server {
+	listen              80;
+	listen              [::]:80;
+	server_name         netbox.{{ search_domain }};
+
+	return 301 https://netbox.{{ search_domain }}$request_uri;
+}

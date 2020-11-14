@@ -1,0 +1,66 @@
+- name: Deploy pihole with Docker
+  hosts: production
+  gather_facts: False
+
+  vars:
+    # srv_DOCKER: "/srv/DOCKER"
+
+  tasks:
+    - name: Install dependencies
+      package:
+        name:
+          - python-pip
+        state: present
+
+    - name: Install Python Docker
+      shell: "pip install docker"
+
+    - name: Create `{{ srv_DOCKER }}/volumes/pihole` Directory
+      file:
+        path: "{{ srv_DOCKER }}/volumes/pihole"
+        state: directory
+
+    - name: Copy `PiHole` Application
+      copy:
+        src: ./pihole/
+        dest: "{{ srv_DOCKER }}/volumes/pihole/"
+
+    - name: launch the docker-compose
+      shell: "docker-compose up -d"
+      args:
+        chdir: "{{ srv_DOCKER }}/volumes/pihole/"
+
+    - firewalld:
+        zone: public
+        port: 9980/tcp
+        permanent: yes
+        immediate: yes
+        state: enabled
+
+    - firewalld:
+        zone: public
+        port: 9943/tcp
+        permanent: yes
+        immediate: yes
+        state: enabled
+
+    - firewalld:
+        zone: public
+        port: 53/tcp
+        permanent: yes
+        immediate: yes
+        state: enabled
+
+    - firewalld:
+        zone: public
+        port: 53/udp
+        permanent: yes
+        immediate: yes
+        state: enabled
+
+    - firewalld:
+        zone: public
+        port: 67/udp
+        permanent: yes
+        immediate: yes
+        state: enabled
