@@ -1,0 +1,6 @@
+- name: Install and Configure RKhunter
+  hosts: storage
+  become: yes
+
+  roles:
+    - { role: ../../roles/rkhunter }

@@ -34,4 +34,4 @@
     state: latest
 
 - name: Install Python Module pexpect
-  shell: "pip install pexpect"
+  shell: "pip3 install pexpect"

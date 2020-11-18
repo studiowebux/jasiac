@@ -1,0 +1,5 @@
+- name: Configure SELinux
+  hosts: storage
+  become: yes
+  roles:
+    - { role: ../../roles/selinux }

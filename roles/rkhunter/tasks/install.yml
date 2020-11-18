@@ -1,4 +1,9 @@
 ---
+- name: Install epel-release
+  package:
+    name: epel-release
+    state: latest
+
 - name: Install RKhunter
   package:
     name: rkhunter

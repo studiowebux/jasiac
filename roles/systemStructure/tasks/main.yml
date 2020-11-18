@@ -5,12 +5,21 @@
   file:
     path: "{{ srv_DOCKER }}"
     state: directory
+  when: srv_DOCKER is defined and srv_DOCKER != ''
+
+
+- name: Create {{ srv_BACKUP }}
+  file:
+    path: "{{ srv_BACKUP }}"
+    state: directory
+  when: srv_BACKUP is defined and srv_BACKUP != ''
 
 ## Create Mount point for Data
 - name: Create {{ srv_DATA }}
   file:
     path: "{{ srv_DATA }}"
     state: directory
+  when: srv_DATA is defined and srv_DATA != ''
 
 ## Mount DATA
 - name: mount /dev/{{ DATA_partition }} to {{ srv_DATA }}
@@ -19,6 +28,11 @@
     src: "/dev/{{ DATA_partition }}"
     state: mounted
     fstype: xfs
+  when: 
+    - DATA_partition is defined
+    - DATA_partition != ''
+    - srv_DATA is defined
+    - srv_DATA != ''
 
 ## Mount DOCKER
 - name: mount /dev/{{ DOCKER_partition }} to {{ srv_DOCKER }}
@@ -27,6 +41,24 @@
     src: "/dev/{{ DOCKER_partition }}"
     state: mounted
     fstype: xfs
+  when: 
+    - DOCKER_partition is defined
+    - DOCKER_partition != ''
+    - srv_DOCKER is defined
+    - srv_DOCKER != ''
+
+## Mount BACKUP
+- name: mount /dev/{{ BACKUP_partition }} to {{ srv_BACKUP }}
+  mount:
+    path: "{{ srv_BACKUP }}"
+    src: "/dev/{{ BACKUP_partition }}"
+    state: mounted
+    fstype: xfs
+  when: 
+    - BACKUP_partition is defined
+    - BACKUP_partition != ''
+    - srv_BACKUP is defined
+    - srv_BACKUP != ''
 
 # DOCKER Structure
 - block:
@@ -35,6 +67,19 @@
         path: "{{ item }}"
         state: directory
       with_items: "{{ docker_directories }}"
+  when: docker_directories is defined
+
+# BACKUP Structure
+- block:
+    - name: Create BACKUP Directories
+      file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: "{{ item.mode }}"
+        owner: "{{ item.owner }}"
+        group: "{{ item.group }}"
+      with_items: "{{ backup_directories }}"
+  when: backup_directories is defined
 
 # DATA Structure
 - block:
@@ -46,6 +91,7 @@
         owner: "{{ item.owner }}"
         group: "{{ item.group }}"
       with_items: "{{ data_directories }}"
+  when: data_directories is defined
 
 # Create Mount Point
 - block:
@@ -54,6 +100,7 @@
         path: "{{ item }}"
         state: directory
       with_items: "{{ mount_points }}"
+  when: mount_points is defined
 
 # Bind Mount
 - block:
@@ -65,8 +112,9 @@
         state: mounted
         fstype: none
       with_items: "{{ bind_mounts }}"
+  when: bind_mounts is defined
 
 # It allows to force the group with RWX
 - name: Set ACL to /storage
   shell: "setfacl -Rdm g:nobody:rwx /storage/"
-  when: acl_for_storage
+  when: acl_for_storage is defined and acl_for_storage

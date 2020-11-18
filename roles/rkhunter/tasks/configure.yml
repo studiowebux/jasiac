@@ -1,6 +1,7 @@
 ---
 - name: Run rkhunter update
   shell: "rkhunter --update"
+  ignore_errors: true # Should be a retry until rc == 0
 
 - name: Run rkhunter propupd
   shell: "rkhunter --propupd"

@@ -1,6 +1,6 @@
 # File System
 
-It prepares the extra and docker drives to hold all the data for the internal usage.
+It prepares the data, docker and backup drives to hold all the data for the internal usage.
 
 ## Requirements
 
@@ -12,8 +12,9 @@ It prepares the extra and docker drives to hold all the data for the internal us
 
 | Variable     | Default values |
 | ------------ | -------------- |
-| DATA_drive   | "md0"          |
-| DOCKER_drive | "sdb"          |
+| DATA_drive   | "md123"        |
+| DOCKER_drive | "sdx"          |
+| BACKUP_drive | "sdy"          |
 | wipe_disks   | no             |
 
 ## Dependencies

@@ -4,7 +4,7 @@
     msg: "Provide a value for at least : DATA_drive"
   when: "DATA_drive == ''"
 
-## EXTRA DRIVE
+## DATA DRIVE
 - block:
     - name: Check if the extra drive is available (No Partition), if not, notice to the user that the drive is not empty
       shell: "lsblk /dev/{{ DATA_drive }} | grep part"
@@ -56,32 +56,85 @@
     - fail:
         msg: "Please choose a different drive and start the script again."
       when: "prompt_status.user_input is defined and 'y' not in prompt_status.user_input and DOCKER_drive_has_partitions.rc == 0"
-  when: "DATA_drive != DOCKER_drive"
+  when: "DATA_drive != DOCKER_drive and DOCKER_drive != ''"
+
+## BACKUP DRIVE
+- block:
+    - name: Check if the backup drive is available (No Partition), if not, notice to the user that the drive is not empty
+      shell: "lsblk /dev/{{ BACKUP_drive }} | grep part"
+      register: BACKUP_drive_has_partitions
+      ignore_errors: true
+
+    - pause:
+        prompt: "Do you want to clear all partitions for /dev/{{ BACKUP_drive }} (y/N) ?"
+        echo: yes
+      register: prompt_status
+      when: "BACKUP_drive_has_partitions.rc == 0 and (wipe_disks | bool) == False"
+
+    - debug:
+        msg: "The drive /dev/{{ BACKUP_drive }} will be use for the backup directory"
+      when: "BACKUP_drive_has_partitions.rc == 1"
+
+    - debug:
+        msg: "The partitions will be automatically cleared"
+      when: "prompt_status.user_input is defined and 'y' in prompt_status.user_input and BACKUP_drive_has_partitions.rc == 0  or BACKUP_drive_has_partitions.rc == 1 "
+
+    - fail:
+        msg: "Please choose a different drive and start the script again."
+      when: "prompt_status.user_input is defined and 'y' not in prompt_status.user_input and BACKUP_drive_has_partitions.rc == 0"
+  when: "BACKUP_drive != DATA_drive and BACKUP_drive != ''"
 
 ## Check if the drive if the same for both extra and docker
 - set_fact:
-    drive: "/dev/{{ DATA_drive }}"
     drive1: ""
   when: "DATA_drive == DOCKER_drive"
 
 - set_fact:
+    drive2: ""
+  when: "DATA_drive == BACKUP_drive"
+
+- set_fact:
     drive: "/dev/{{ DATA_drive }}"
+
+- set_fact:
     drive1: "/dev/{{ DOCKER_drive }}"
-  when: "DATA_drive != DOCKER_drive"
+  when: "DATA_drive != DOCKER_drive and DOCKER_drive != ''"
+
+- set_fact:
+    drive2: "/dev/{{ BACKUP_drive }}"
+  when: "DATA_drive != BACKUP_drive and BACKUP_drive != ''"
 
 - debug:
-    msg: "using {{ drive }} for /srv/extra & {{ drive1 }} for /srv/docker"
+    msg: "using {{ drive }} for /srv/DATA"
+
+- debug:
+    msg: "{{ drive1 }} for /srv/DOCKER"
+  when: drive1 is defined
+
+- debug:
+    msg: "{{ drive2 }} for /srv/BACKUP"
+  when: drive2 is defined
 
 ## OPERATIONS on drives
-- name: unmount Drives and directories
+- name: unmount {{ drive }} and directories
   mount:
     path: "{{ drive }}"
     state: unmounted
-  with_items:
-    - "{{ drive }}1"
-    - "{{ drive1 }}1"
+  when: "drive != ''"
 
-## EXTRA DRIVE
+- name: unmount {{ drive1 }} and directories
+  mount:
+    path: "{{ drive1 }}"
+    state: unmounted
+  when: "drive1 is defined and drive1 != ''"
+
+- name: unmount {{ drive2 }} and directories
+  mount:
+    path: "{{ drive2 }}"
+    state: unmounted
+  when: "drive2 is defined and drive2 != ''"
+
+## DATA DRIVE
 - block:
     - name: cleaning drive
       shell: "wipefs -a {{ drive }}"
@@ -185,4 +238,58 @@
         force: true
       when: '"md" in drive1'
 
-  when: "drive != drive1 and drive1 != ''"
+  when: "drive1 is defined and drive != drive1 and drive1 != ''"
+
+  ## BACKUP DRIVE
+- block:
+    - debug:
+        msg: "{{ drive2 }}"
+    - name: cleaning drive
+      shell: "wipefs -a {{ drive2 }}"
+      when: '"md" not in drive2'
+
+    - name: Get all partitions
+      parted:
+        device: "{{ drive2 }}"
+        unit: GB
+      register: sdX_info
+      when: '"md" not in drive2'
+
+    - name: Remove all partitions
+      parted:
+        device: "{{ drive2 }}"
+        number: "{{ item.num }}"
+        state: absent
+      with_items:
+        - "{{ sdX_info.partitions }}"
+      when: '"md" not in drive2'
+
+    - name: Create partition for {{ drive2 }}
+      parted:
+        device: "{{ drive2 }}"
+        number: 1
+        state: present
+        part_end: 100%
+        label: gpt
+      when: '"md" not in drive2'
+
+    - name: Wait 30 seconds
+      pause:
+        seconds: 30
+      when: '"md" not in drive2'
+
+    - name: Create filesystem for {{ drive2 }} when DISK
+      filesystem:
+        fstype: xfs
+        dev: "{{ drive2 }}1"
+        force: true
+      when: '"md" not in drive2'
+
+    - name: Create filesystem for {{ drive2 }} when RAID device
+      filesystem:
+        fstype: xfs
+        dev: "{{ drive2 }}"
+        force: true
+      when: '"md" in drive2'
+
+  when: "drive2 is defined and drive != drive2 and drive2 != ''"

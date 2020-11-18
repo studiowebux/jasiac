@@ -1,0 +1,5 @@
+- name: Install Utilities
+  hosts: storage
+  become: yes
+  roles:
+    - { role: ../../roles/utilities }

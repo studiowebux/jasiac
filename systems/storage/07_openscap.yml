@@ -1,0 +1,6 @@
+- name: Install and configure openscap
+  hosts: storage
+  become: yes
+  roles:
+    - { role: ../../roles/installOpenscap }
+    - { role: ../../roles/configureOpenscap }

@@ -1,0 +1,5 @@
+- name: Install and configure SMB Server
+  hosts: storage
+  become: yes
+  roles:
+    - { role: ../../roles/installSMB }

@@ -2,5 +2,6 @@
 - name: Configure Filesystem
   hosts: physical
   become: yes
+
   roles:
     - { role: roles/filesystem }

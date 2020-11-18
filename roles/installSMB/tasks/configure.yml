@@ -1,7 +1,7 @@
 ---
 - name: Configure the shares
   template:
-    src: smb.conf.j2
+    src: "{{ template_samba }}"
     dest: /etc/samba/smb.conf
     owner: root
     group: root

@@ -1,0 +1,6 @@
+- name: Deploy and configure filesystem
+  hosts: storage
+  become: yes
+
+  roles:
+    - { role: ../../roles/filesystem }

@@ -1,5 +1,6 @@
 ---
 # defaults file for filesystem
-DATA_drive: "md0"
-DOCKER_drive: "sda"
+DATA_drive: "md123"
+DOCKER_drive: "sdx"
+BACKUP_drive: "sdy"
 wipe_disks: no
