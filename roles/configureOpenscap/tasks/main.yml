@@ -32,4 +32,4 @@
       --results-arf {{ openscap_expose_directory }}arf_${currentDate}_${host}.xml \
       --report {{ openscap_expose_directory }}report_${currentDate}_${host}.html \
       /usr/share/xml/scap/ssg/content/{{ openscap_profile }}
-      ) | /bin/mail -s "openscap Monthly on (${host}) has finished - Report available : /openscap_reports/report_${currentDate}_${host}.html" {{ openscap_email }}
+      ) | /bin/mail -s "openscap Monthly on (${host}) has finished - Report available : /openscap_reports/report_${currentDate}_${host}.html" -r '{{ hostname }}<{{ openscap_email }}>' {{ openscap_email }}
