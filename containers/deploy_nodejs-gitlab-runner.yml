@@ -1,0 +1,66 @@
+- name: Deploy Gitlab Runner for NodeJS with Docker
+  hosts: physical
+  gather_facts: no
+  become: yes
+
+  vars:
+    # srv_DOCKER: "/srv/DOCKER"
+    # search_domain: "local.lab"
+    certificate_name: "studiowebux_CA.pem"
+    gitlab_url: "https://git.webux.lab/"
+    runner_name: "Docker NodeJS Runner"
+    docker_image: "node:12.19.0"
+    runner_executor: "docker"
+
+  vars_prompt:
+    - name: "gitlab_token"
+      prompt: "Gitlab Token"
+      private: no
+    - name: "runnerId"
+      prompt: "Runner unique identifier"
+      private: no
+
+  tasks:
+    - name: Install dependencies
+      package:
+        name:
+          - python-pip
+        state: present
+
+    - name: Install Python Docker
+      shell: "pip install docker"
+
+    - name: Create `{{ srv_DOCKER }}/volumes/gitlab-runner-{{ runnerId }}` Directory
+      file:
+        path: "{{ srv_DOCKER }}/volumes/gitlab-runner-{{ runnerId }}"
+        state: directory
+
+    - name: Deploy `GitlabRunnerNodeJS{{ runnerId }}` with Docker
+      docker_container:
+        name: GitlabRunnerNodeJS{{ runnerId }}
+        image: gitlab/gitlab-runner:latest
+        state: started
+        recreate: true
+        restart_policy: always
+        volumes:
+          - "{{ srv_DOCKER }}/volumes/gitlab-runner/config:/etc/gitlab-runner"
+          - "/var/run/docker.sock:/var/run/docker.sock"
+
+    - name: Copy root certificate to container
+      copy:
+        src: "{{ srv_DATA }}/tools/certificates/{{ certificate_name }}"
+        dest: "{{ srv_DOCKER }}/volumes/gitlab-runner/config/"
+        remote_src: yes
+
+    - name: Configure the runner
+      shell: |
+        docker run --rm -it \
+          -v /srv/DOCKER/volumes/gitlab-runner/config:/etc/gitlab-runner \
+          gitlab/gitlab-runner register \
+              --tls-ca-file=/etc/gitlab-runner/{{ certificate_name }} \
+              --non-interactive \
+              --url "{{ gitlab_url }}" \
+              --name "{{ runner_name }}-{{ runnerId }}" \
+              --executor "{{ runner_executor }}" \
+              --registration-token "{{ gitlab_token }}" \
+              --docker-image "{{ docker_image }}"
