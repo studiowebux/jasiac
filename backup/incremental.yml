@@ -8,6 +8,8 @@
     backupPath: "/mnt/Backup"
     recipient: "changeme@local.lab"
     serverName: "serverName"
+    hostname: "domain.com"
+    sender: "no-reply@domain.com"
 
   tasks:
     - mount:
@@ -36,7 +38,7 @@
         path: "/BACKUP/{{ serverName }}/VM"
         state: directory
 
-    - shell: "echo 'Starting Backup of DATA' | mail -s 'Backup Status (DATA)' -r '{{ hostname }}<{{ recipient }}>' {{ recipient }}"
+    - shell: "echo 'Starting Backup of DATA' | mail -s 'Backup Status (DATA)' -r '{{ serverName }}.{{ hostname }}<{{ sender }}>' {{ recipient }}"
 
     - shell: |
         tar -czpv -g /BACKUP/{{ serverName }}/DATA-$(date +%Y-%m-%d).snar -f \
@@ -50,9 +52,9 @@
         /srv/DATA/
       ignore_errors: yes
 
-    - shell: 'echo "Backup of DATA-$(date +%Y-%m-%d).tar.gz DONE" | mail -s ''Backup Status (DATA)'' -r '{{ hostname }}<{{ recipient }}>' {{ recipient }}'
+    - shell: echo "Backup of DATA-$(date +%Y-%m-%d).tar.gz DONE" | mail -s 'Backup Status (DATA)' -r '{{ serverName }}.{{ hostname }}<{{ sender }}>' {{ recipient }}
 
-    - shell: "echo 'Starting Backup of Docker' | mail -s 'Backup Status (DOCKER)' -r '{{ hostname }}<{{ recipient }}>' {{ recipient }}"
+    - shell: "echo 'Starting Backup of Docker' | mail -s 'Backup Status (DOCKER)' -r '{{ serverName }}.{{ hostname }}<{{ sender }}>' {{ recipient }}"
 
     - shell: |
         tar -czpv -g /BACKUP/{{ serverName }}/DOCKER-$(date +%Y-%m-%d).snar -f \
@@ -61,9 +63,9 @@
         /srv/DOCKER/
       ignore_errors: yes
 
-    - shell: 'echo "Backup of DOCKER-$(date +%Y-%m-%d).tar.gz DONE" | mail -s ''Backup Status (DOCKER)'' -r '{{ hostname }}<{{ recipient }}>' {{ recipient }}'
+    - shell: echo "Backup of DOCKER-$(date +%Y-%m-%d).tar.gz DONE" | mail -s 'Backup Status (DOCKER)' -r '{{ serverName }}.{{ hostname }}<{{ sender }}>' {{ recipient }}
 
-    - shell: "echo 'Starting Backup of OS' | mail -s 'Backup Status (OS)' -r '{{ hostname }}<{{ recipient }}>' {{ recipient }}"
+    - shell: "echo 'Starting Backup of OS' | mail -s 'Backup Status (OS)' -r '{{ serverName }}.{{ hostname }}<{{ sender }}>' {{ recipient }}"
 
     - shell: |
         tar -czpv -g /BACKUP/{{ serverName }}/OS-$(date +%Y-%m-%d).snar -f \
@@ -87,12 +89,12 @@
         /
       ignore_errors: yes
 
-    - shell: 'echo "Backup of OS-$(date +%Y-%m-%d).tar.gz DONE" | mail -s ''Backup Status (OS)'' -r '{{ hostname }}<{{ recipient }}>' {{ recipient }}'
+    - shell: echo "Backup of OS-$(date +%Y-%m-%d).tar.gz DONE" | mail -s 'Backup Status (OS)' -r '{{ serverName }}.{{ hostname }}<{{ sender }}>' {{ recipient }}
 
     - debug:
         msg: "Backup virtual machines"
 
-    - shell: "echo 'Starting Backup of VMs' | mail -s 'Backup Status (VM)' -r '{{ hostname }}<{{ recipient }}>' {{ recipient }}"
+    - shell: "echo 'Starting Backup of VMs' | mail -s 'Backup Status (VM)' -r '{{ serverName }}.{{ hostname }}<{{ sender }}>' {{ recipient }}"
 
     # virsh list
     - shell: "virsh dumpxml {{ item }} > /BACKUP/{{ serverName }}/VM/{{ item }}.xml"
@@ -116,7 +118,7 @@
       # ignore_errors: yes
       with_items: "{{ vmpath.stdout_lines }}"
 
-    - shell: "echo 'Backup of VMs DONE' | mail -s 'Backup Status (VM)' -r '{{ hostname }}<{{ recipient }}>' {{ recipient }}"
+    - shell: "echo 'Backup of VMs DONE' | mail -s 'Backup Status (VM)' -r '{{ serverName }}.{{ hostname }}<{{ sender }}>' {{ recipient }}"
 
     - mount:
         state: unmounted
